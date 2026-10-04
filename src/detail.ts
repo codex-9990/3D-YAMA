@@ -71,7 +71,7 @@ export function createDetailPlan(data:TerrainData,scenery:SceneryData,track?:Tra
     if(nearTrail(x,z,5))continue;
     const y=height(x,z),slope=Math.hypot(height(x+2,z)-height(x-2,z),height(x,z+2)-height(x,z-2))/4;
     if(slope>1.9||y<2)continue;
-    trees.push({x,y:y-.15,z,rotation:random()*Math.PI*2,scale:.62+random()*.66,variant:random()>.72?1:0});
+    trees.push({x,y:y-.15,z,rotation:random()*Math.PI*2,scale:1.05+random()*.7,variant:random()>.72?1:0});
   }
   for(const polygon of bare){
     const xs=polygon[0].map(p=>p[0]),zs=polygon[0].map(p=>p[1]),minX=Math.min(...xs),maxX=Math.max(...xs),minZ=Math.min(...zs),maxZ=Math.max(...zs);

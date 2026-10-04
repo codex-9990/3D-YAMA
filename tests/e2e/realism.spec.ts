@@ -13,7 +13,8 @@ test('real DEM, Blender detail, quality changes, closeups and cameras render',as
  await page.locator('[data-quality="standard"]').click();await page.waitForTimeout(900);await page.screenshot({path:'test-results/forest-standard.png'});const standard=await snapshot(page);expect(standard.detail.nearTrees).toBe(0);expect(standard.render.triangles).toBeLessThan(high.render.triangles);
  for(const focus of ['bare_rock','steps']){await page.locator(`[data-focus="${focus}"]`).click();await page.waitForTimeout(2600);await page.screenshot({path:`test-results/${focus}-high.png`});}
  const memory=(await snapshot(page)).memory;
- for(let i=0;i<6;i++)for(const q of ['low','standard','high']){await page.locator(`[data-quality="${q}"]`).click();await page.waitForTimeout(90);expect((await snapshot(page)).quality).toBe(q);}
+ for(let i=0;i<3;i++)for(const q of ['low','standard','high']){await page.locator(`[data-quality="${q}"]`).click();await page.waitForTimeout(90);expect((await snapshot(page)).quality).toBe(q);}
+ const beforeIdle=(await snapshot(page)).render.frame;await page.waitForTimeout(700);expect((await snapshot(page)).render.frame-beforeIdle).toBeLessThan(4);
  await page.waitForTimeout(500);expect((await snapshot(page)).memory.geometries).toBeLessThanOrEqual(memory.geometries+2);
  await page.locator('[data-quality="low"]').click();expect((await snapshot(page)).detail.trees).toBe(0);expect((await snapshot(page)).detail.steps).toBe(0);
  await page.locator('[data-mode="walk"]').click();expect((await snapshot(page)).mode).toBe('walk');

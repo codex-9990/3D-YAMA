@@ -52,7 +52,7 @@ export class SceneryLayer {
     this.add('Boulder',this.plan.rocks.slice(0,q.rocks),false);
     this.add('TimberStep',this.plan.steps.filter(p=>p.variant===0),false);
     this.add('ConcreteStep',this.plan.steps.filter(p=>p.variant===1),false);
-    this.update(new THREE.Vector3(Infinity,Infinity,Infinity),0);
+    this.update(new THREE.Vector3(Infinity,Infinity,Infinity),0);this.lastLOD=-Infinity;
   }
   private add(name:string,placements:Placement[],near:boolean,species?:number){
     const part=this.assets?.get(name);if(!part||!placements.length)return;

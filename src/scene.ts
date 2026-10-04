@@ -97,6 +97,7 @@ export class TrailScene {
   private animationFrame = 0;
   private lastTime = 0;
   private disposed = false;
+  private renderDirty = true;
   private raycaster = new THREE.Raycaster();
   private pointerStart = { x: 0, y: 0 };
   private onProgress?: (distance: number) => void;
@@ -126,17 +127,17 @@ export class TrailScene {
     container.appendChild(this.labelRoot);
 
     this.scene.add(this.terrainGroup, this.routeGroup, this.walkingRouteGroup, this.markerGroup, this.scenery.group);
-    this.scenery.onStatus = message => this.onDetailStatus?.(message);
+    this.scenery.onStatus = message => {this.renderDirty=true;this.onDetailStatus?.(message);};
     this.walkingRouteGroup.visible = false;
-    this.scene.add(new THREE.HemisphereLight('#fbf5df', '#617c71', 2.2));
-    this.light = new THREE.DirectionalLight('#fff3d5', 3.2);
+    this.scene.add(new THREE.HemisphereLight('#fbf5df', '#425142', 1.45));
+    this.light = new THREE.DirectionalLight('#fff3d5', 2.8);
     this.light.position.set(-2500, 4000, 1500);
     this.light.castShadow = true;
     this.light.shadow.mapSize.set(1024, 1024);
     this.light.shadow.normalBias = 4;
     this.light.shadow.bias = -0.00012;
     this.scene.add(this.light, this.light.target);
-    const fill = new THREE.DirectionalLight('#cfdfeb', 1.05);
+    const fill = new THREE.DirectionalLight('#cfdfeb', .7);
     fill.position.set(2000, 1200, -2200);
     this.scene.add(fill);
 
@@ -163,6 +164,7 @@ export class TrailScene {
   }
 
   setTerrain(data: TerrainData): void {
+    this.renderDirty=true;
     if (data.cols < 2 || data.rows < 2 || data.heights.length !== data.cols * data.rows) {
       throw new Error('Terrain grid is incomplete.');
     }
@@ -184,6 +186,7 @@ export class TrailScene {
     const c = new THREE.Color();
     const range = Math.max(data.max - data.min, 1);
     const bare = this.sceneryData?.features.filter(f=>f.kind==='bare_rock'&&f.geometry.type==='Polygon').map(f=>(f.geometry as Extract<FeatureGeometry,{type:'Polygon'}>).coordinates) ?? [];
+    const wooded = this.sceneryData?.features.filter(f=>f.kind==='forest'&&f.geometry.type==='Polygon').map(f=>(f.geometry as Extract<FeatureGeometry,{type:'Polygon'}>).coordinates) ?? [];
     const rocky = new Float32Array(cols * rows);
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
@@ -205,6 +208,7 @@ export class TrailScene {
         const lon=data.bounds.west+(data.bounds.east-data.bounds.west)*col/(cols-1);
         const lat=data.bounds.south+(data.bounds.north-data.bounds.south)*row/(rows-1);
         rocky[i]=bare.some(p=>insidePolygon(lon,lat,p))?1:0;
+        if(wooded.some(p=>insidePolygon(lon,lat,p)))c.set('#657555');
         if(rocky[i])c.set('#c5b89b');
         c.toArray(colors, i * 3);
         if (row < rows - 1 && col < cols - 1) {
@@ -296,7 +300,7 @@ export class TrailScene {
     shadowCamera.near = 1;
     shadowCamera.far = this.span * 4;
     shadowCamera.updateProjectionMatrix();
-    this.light.shadow.normalBias = this.span * 0.00065;
+    this.light.shadow.normalBias = .22;
     this.controls.minDistance = 7;
     this.controls.maxDistance = this.span * 4;
     this.camera.far = this.span * 15;
@@ -307,6 +311,7 @@ export class TrailScene {
   }
 
   setTrack(track: Track): void {
+    this.renderDirty=true;
     this.track = track;
     this.routeLength = routeStats(track).distance;
     this.distance = 0;
@@ -315,10 +320,11 @@ export class TrailScene {
     this.setDistance(0);
   }
 
-  setPeaks(peaks: TerrainPeak[]): void { this.peaks = peaks; this.rebuildLabels(); }
-  setPhotos(photos: TrailPhoto[]): void { this.photos = photos; this.rebuildLabels(); }
+  setPeaks(peaks: TerrainPeak[]): void { this.renderDirty=true; this.peaks = peaks; this.rebuildLabels(); }
+  setPhotos(photos: TrailPhoto[]): void { this.renderDirty=true; this.photos = photos; this.rebuildLabels(); }
 
   setMode(mode: ViewMode): void {
+    this.renderDirty=true;
     if (mode === this.mode && this.data) return;
     this.mode = mode;
     this.routeGroup.visible = this.showRoute && mode !== 'walk';
@@ -345,6 +351,7 @@ export class TrailScene {
   }
 
   setDistance(meters: number): void {
+    this.renderDirty=true;
     this.distance = clamp(Number.isFinite(meters) ? meters : 0, 0, this.routeLength);
     if (!this.track || !this.projection) return;
     const point = this.currentPoint();
@@ -358,8 +365,8 @@ export class TrailScene {
   setScenery(data?:SceneryData):void { this.sceneryData=data; }
   get detailStats(){return this.scenery.stats;}
   snapshot(){return {quality:this.quality,mode:this.mode,routeVisible:this.showRoute,detail:this.scenery.stats,camera:this.camera.position.toArray(),target:this.controls.target.toArray(),memory:{...this.renderer.info.memory},render:{...this.renderer.info.render},terrain:this.data?.id};}
-  setRouteVisible(visible:boolean):void {this.showRoute=visible;this.routeGroup.visible=visible&&this.mode!=='walk';this.walkingRouteGroup.visible=visible&&this.mode==='walk';}
-  focus(lon:number,lat:number,distance=90):void {
+  setRouteVisible(visible:boolean):void {this.renderDirty=true;this.showRoute=visible;this.routeGroup.visible=visible&&this.mode!=='walk';this.walkingRouteGroup.visible=visible&&this.mode==='walk';}
+  focus(lon:number,lat:number,distance=90):void {this.renderDirty=true;
     if(!this.data||!this.contains({lat,lon}))return;
     this.mode='orbit';this.controls.enabled=true;this.controls.enableRotate=true;this.controls.minPolarAngle=.08;this.controls.maxPolarAngle=Math.PI/2.12;this.camera.up.set(0,1,0);this.camera.near=.1;this.camera.fov=48;this.camera.updateProjectionMatrix();
     const target=this.worldPosition({lat,lon},2);
@@ -368,6 +375,7 @@ export class TrailScene {
     this.setRouteVisible(this.showRoute);
   }
   setQuality(quality: Quality): void {
+    this.renderDirty=true;
     this.quality = quality;
     const q=QUALITY[quality];
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, q.pixelRatio));
@@ -383,6 +391,7 @@ export class TrailScene {
   }
 
   reset(): void {
+    this.renderDirty=true;
     this.mode = 'orbit';
     this.routeGroup.visible = this.showRoute;
     this.walkingRouteGroup.visible = false;
@@ -635,6 +644,7 @@ export class TrailScene {
   }
 
   private resize = (): void => {
+    this.renderDirty=true;
     if (this.disposed) return;
     const wasPortrait = this.width / this.height < 0.9;
     const rect = this.container.getBoundingClientRect();
@@ -673,6 +683,7 @@ export class TrailScene {
     if (this.quality === 'low' && time - this.lastTime < 30) return;
     const delta = Math.min((time - this.lastTime) / 1000, 0.1);
     this.lastTime = time;
+    const wasTransition=this.transition;
     if (this.transition) {
       const amount = this.reducedMotion ? 1 : 1 - Math.exp(-delta * (this.mode === 'walk' ? 6 : 4));
       this.camera.position.lerp(this.desiredPosition, amount);
@@ -681,7 +692,10 @@ export class TrailScene {
       this.camera.lookAt(this.currentTarget);
       if (this.camera.position.distanceTo(this.desiredPosition) < 0.25 && this.currentTarget.distanceTo(this.desiredTarget) < 0.25) this.transition = false;
     }
-    if (this.mode !== 'walk') this.controls.update();
+    const cameraChanged=this.mode !== 'walk' && this.controls.update();
+    // Static dioramas need no repeated GPU work; redraw for interaction, playback or asset changes.
+    if(!this.renderDirty&&!cameraChanged&&!wasTransition)return;
+    this.renderDirty=false;
     this.scenery.update(this.camera.position,time);
     this.renderer.render(this.scene, this.camera);
     this.updateLabels();
