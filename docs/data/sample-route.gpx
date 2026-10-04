@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='utf-8'?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="3D-YAMA public sample builder">
+  <metadata>
+    <name>須磨サンプル：鉢伏山 → 旗振山 → 鉄拐山</name>
+    <desc>公開地図から作成した表示確認用の概略ルートです。実際に歩いた記録ではありません。通行可否・危険箇所・現況は未確認です。登山中のナビゲーションや安全判断には使用しないでください。 標高は国土地理院DEMから補間した地表高です。</desc>
+    <copyright author="OpenStreetMap contributors">
+      <license>https://opendatacommons.org/licenses/odbl/1-0/</license>
+    </copyright>
+    <link href="https://www.openstreetmap.org/copyright">
+      <text>© OpenStreetMap contributors</text>
+    </link>
+    <link href="https://maps.gsi.go.jp/development/ichiran.html#dem">
+      <text>地理院タイル（標高タイル）を加工して作成</text>
+    </link>
+    <link href="https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html">
+      <text>GSI content terms</text>
+    </link>
+    <bounds minlat="34.641502" minlon="135.0947397" maxlat="34.6472467" maxlon="135.0993708" />
+  </metadata>
+  <trk>
+    <name>須磨サンプル：鉢伏山 → 旗振山 → 鉄拐山</name>
+    <desc>OSMの連続する登山道形状を接続。公開地図から作成した表示確認用の概略ルートです。実際に歩いた記録ではありません。通行可否・危険箇所・現況は未確認です。登山中のナビゲーションや安全判断には使用しないでください。</desc>
+    <src>© OpenStreetMap contributors / 地理院タイル（標高タイル）を加工して作成</src>
+    <trkseg>
+      <trkpt lat="34.6415020" lon="135.0959094">
+        <ele>245.40</ele>
+      </trkpt>
+      <trkpt lat="34.6422360" lon="135.0955282">
+        <ele>233.84</ele>
+      </trkpt>
+      <trkpt lat="34.6423693" lon="135.0955597">
+        <ele>226.75</ele>
+      </trkpt>
+      <trkpt lat="34.6425120" lon="135.0954260">
+        <ele>226.97</ele>
+      </trkpt>
+      <trkpt lat="34.6426520" lon="135.0953580">
+        <ele>225.72</ele>
+      </trkpt>
+      <trkpt lat="34.6428224" lon="135.0952355">
+        <ele>230.65</ele>
+      </trkpt>
+      <trkpt lat="34.6429697" lon="135.0950052">
+        <ele>236.26</ele>
+      </trkpt>
+      <trkpt lat="34.6430580" lon="135.0949341">
+        <ele>235.72</ele>
+      </trkpt>
+      <trkpt lat="34.6431452" lon="135.0948967">
+        <ele>236.72</ele>
+      </trkpt>
+      <trkpt lat="34.6433981" lon="135.0948690">
+        <ele>244.47</ele>
+      </trkpt>
+      <trkpt lat="34.6435287" lon="135.0947822">
+        <ele>249.25</ele>
+      </trkpt>
+      <trkpt lat="34.6435987" lon="135.0947397">
+        <ele>250.78</ele>
+      </trkpt>
+      <trkpt lat="34.6436458" lon="135.0947468">
+        <ele>251.19</ele>
+      </trkpt>
+      <trkpt lat="34.6436930" lon="135.0947540">
+        <ele>251.45</ele>
+      </trkpt>
+      <trkpt lat="34.6439059" lon="135.0949059">
+        <ele>251.32</ele>
+      </trkpt>
+      <trkpt lat="34.6441291" lon="135.0950081">
+        <ele>250.69</ele>
+      </trkpt>
+      <trkpt lat="34.6442648" lon="135.0950059">
+        <ele>247.68</ele>
+      </trkpt>
+      <trkpt lat="34.6444724" lon="135.0950311">
+        <ele>242.05</ele>
+      </trkpt>
+      <trkpt lat="34.6447036" lon="135.0951405">
+        <ele>238.10</ele>
+      </trkpt>
+      <trkpt lat="34.6451156" lon="135.0950791">
+        <ele>228.69</ele>
+      </trkpt>
+      <trkpt lat="34.6453638" lon="135.0952071">
+        <ele>228.38</ele>
+      </trkpt>
+      <trkpt lat="34.6454936" lon="135.0953805">
+        <ele>226.06</ele>
+      </trkpt>
+      <trkpt lat="34.6456928" lon="135.0959853">
+        <ele>227.70</ele>
+      </trkpt>
+      <trkpt lat="34.6458084" lon="135.0965747">
+        <ele>223.48</ele>
+      </trkpt>
+      <trkpt lat="34.6460377" lon="135.0968002">
+        <ele>218.18</ele>
+      </trkpt>
+      <trkpt lat="34.6460899" lon="135.0969024">
+        <ele>215.06</ele>
+      </trkpt>
+      <trkpt lat="34.6461421" lon="135.0971735">
+        <ele>208.48</ele>
+      </trkpt>
+      <trkpt lat="34.6462301" lon="135.0973452">
+        <ele>204.68</ele>
+      </trkpt>
+      <trkpt lat="34.6465635" lon="135.0977938">
+        <ele>200.85</ele>
+      </trkpt>
+      <trkpt lat="34.6466548" lon="135.0979332">
+        <ele>200.67</ele>
+      </trkpt>
+      <trkpt lat="34.6468089" lon="135.0981042">
+        <ele>203.49</ele>
+      </trkpt>
+      <trkpt lat="34.6469350" lon="135.0983220">
+        <ele>213.85</ele>
+      </trkpt>
+      <trkpt lat="34.6469836" lon="135.0985229">
+        <ele>223.60</ele>
+      </trkpt>
+      <trkpt lat="34.6470521" lon="135.0987252">
+        <ele>230.46</ele>
+      </trkpt>
+      <trkpt lat="34.6470514" lon="135.0988889">
+        <ele>232.56</ele>
+      </trkpt>
+      <trkpt lat="34.6471065" lon="135.0990872">
+        <ele>233.43</ele>
+      </trkpt>
+      <trkpt lat="34.6471729" lon="135.0992780">
+        <ele>234.70</ele>
+      </trkpt>
+      <trkpt lat="34.6472467" lon="135.0993708">
+        <ele>233.86</ele>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
