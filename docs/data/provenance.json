@@ -1,87 +1,152 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "suma",
   "preparedDate": "2026-10-04",
-  "description": "Small, offline public-data demo. No private tracks, photographs, logs, account data or personal notes.",
+  "description": "Eastern Suma Alps public map sample containing the actual 馬の背 region. No private tracks, personal photographs, account data or activity logs.",
+  "replaces": "Earlier 919m 鉢伏山〜旗振山〜鉄拐山 sample did not include 馬の背; it is no longer the bundled demo.",
   "terrain": {
     "file": "terrain.json",
-    "sourceName": "GSI DEM5A PNG zoom15, ground terrain only",
+    "sourceName": "GSI DEM5A PNG elevation tiles",
     "sourceUrls": [
       "https://maps.gsi.go.jp/development/ichiran.html#dem",
       "https://maps.gsi.go.jp/development/demtile.html"
     ],
-    "tileTemplate": "https://cyberjapandata.gsi.go.jp/xyz/dem5a_png/15/{x}/{y}.png",
-    "sourceRetrievalDate": null,
-    "sourceRetrievalDateNote": "Not recorded in supplied DEM; do not infer it from file modification time.",
+    "sourceRetrievalDate": "2026-10-04",
     "sourceSurveyDate": null,
     "license": "Public Data License 1.0 (GSI content terms)",
     "licenseUrl": "https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html",
-    "attribution": "地理院タイル（標高タイル）を加工して作成",
-    "originalBounds": [
-      135.08962605477817,
-      34.63415416244292,
-      135.10491248492605,
-      34.650323837557075
+    "attribution": "地理院タイル（標高タイル・空中写真）を加工して作成",
+    "tileTemplate": "https://cyberjapandata.gsi.go.jp/xyz/dem5a_png/15/{x}/{y}.png",
+    "sourceTiles": [
+      {
+        "x": 28681,
+        "y": 13016,
+        "zoom": 15,
+        "file": "source-dem5a-15-28681-13016.png",
+        "url": "https://cyberjapandata.gsi.go.jp/xyz/dem5a_png/15/28681/13016.png"
+      },
+      {
+        "x": 28681,
+        "y": 13017,
+        "zoom": 15,
+        "file": "source-dem5a-15-28681-13017.png",
+        "url": "https://cyberjapandata.gsi.go.jp/xyz/dem5a_png/15/28681/13017.png"
+      },
+      {
+        "x": 28682,
+        "y": 13016,
+        "zoom": 15,
+        "file": "source-dem5a-15-28682-13016.png",
+        "url": "https://cyberjapandata.gsi.go.jp/xyz/dem5a_png/15/28682/13016.png"
+      },
+      {
+        "x": 28682,
+        "y": 13017,
+        "zoom": 15,
+        "file": "source-dem5a-15-28682-13017.png",
+        "url": "https://cyberjapandata.gsi.go.jp/xyz/dem5a_png/15/28682/13017.png"
+      }
     ],
-    "outputBounds": {
-      "west": 135.08962605477817,
-      "south": 34.63936439109081,
-      "east": 135.10491248492605,
-      "north": 34.65032383755707
+    "nativePixelBounds": {
+      "west": 7342443,
+      "north": 3332151,
+      "east": 7342731,
+      "south": 3332390
     },
-    "processing": [
-      "Reuse publicly sourced GSI DEM5A PNG zoom-15 samples from the supplied DEM.",
-      "Crop source rows 58–180, inclusive; preserve every column and exact stored elevation.",
-      "Flatten rows south to north, with columns west to east.",
-      "No zero filling, synthetic terrain, smoothing, or replacement of missing values."
-    ],
-    "removedSourceRows": 58,
+    "outputBounds": {
+      "west": 135.1034688949585,
+      "south": 34.658980972789585,
+      "east": 135.11582851409912,
+      "north": 34.66741726147758
+    },
+    "cols": 289,
+    "rows": 240,
+    "vertexCount": 69360,
+    "sourceResolutionMeters": 5,
+    "approximateGridSpacingMeters": 3.929,
+    "maxLinearLatitudeErrorMeters": 0.01195,
+    "minMeters": 84.29,
+    "maxMeters": 310.55,
     "retainedMissingValues": 0,
-    "cols": 141,
-    "rows": 123,
-    "vertexCount": 17343,
-    "minMeters": 0.21,
-    "maxMeters": 252.7,
-    "approximateGridSpacingMeters": 10,
-    "verticalDatum": "Native GSI ground-elevation data; rigorous datum/survey-date verification not performed.",
+    "sampleChecks": [
+      {
+        "pixel": [
+          7342443,
+          3332390
+        ],
+        "elevationMeters": 148.52
+      },
+      {
+        "pixel": [
+          7342731,
+          3332390
+        ],
+        "elevationMeters": 139.07
+      },
+      {
+        "pixel": [
+          7342443,
+          3332151
+        ],
+        "elevationMeters": 147.08
+      },
+      {
+        "pixel": [
+          7342731,
+          3332151
+        ],
+        "elevationMeters": 164.12
+      },
+      {
+        "pixel": [
+          7342587,
+          3332270
+        ],
+        "elevationMeters": 188.64
+      }
+    ],
+    "processing": [
+      "Decode each native zoom-15 RGB elevation using the published signed-centimeter formula.",
+      "Retain every pixel in the selected rectangle, reorder south-to-north and west-to-east. Preserve every decoded height exactly.",
+      "No resampling, smoothing, height exaggeration, invented rock relief, upsampling or missing-value filling in this dataset.",
+      "The viewer uses regular latitude interpolation; exact native row latitudes and less-than-two-centimeter mapping discrepancy are disclosed."
+    ],
     "limitations": [
-      "Ground elevations omit structures, bridge decks, stair tread heights and vegetation.",
-      "About 10 m sampling cannot resolve small terrain or trail features.",
-      "Some mesh elevations and OSM tagged summit elevations differ; neither is field-surveyed here."
+      "The source is a nominal 5m DEM; ~3.93m rendered tile samples do not imply finer survey accuracy.",
+      "GSI itself linearly processes original DEM into map tiles. Narrow rock pinnacles, stair treads, tree positions and structures are unresolved.",
+      "GSI source survey date and vertical accuracy for this tile were not independently audited."
     ]
   },
   "route": {
     "file": "sample-route.gpx",
-    "name": "須磨サンプル：鉢伏山 → 旗振山 → 鉄拐山",
-    "sourceUrl": "https://api.openstreetmap.org/api/0.6/map.json?bbox=135.086,34.6315,135.112,34.6505",
-    "sourceRetrievalDate": "2026-10-03",
+    "name": "須磨アルプス：400段階段 → 栂尾山 → 横尾山 → 馬の背 → 東山付近",
+    "sourceUrl": "https://api.openstreetmap.org/api/0.6/map.json?bbox=135.102,34.657,135.118,34.669",
+    "sourceRetrievalDate": "2026-10-04",
     "attribution": "© OpenStreetMap contributors",
     "license": "ODbL-1.0",
     "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/",
     "copyrightUrl": "https://www.openstreetmap.org/copyright",
     "sourceWayIds": [
-      1472695806,
-      165600418,
-      165604658,
-      627560210,
-      627560211,
-      627560213
+      369143234,
+      201730066
+    ],
+    "sourceMainWayIndicesInclusive": [
+      52,
+      193
     ],
     "processing": [
-      "Take supplied hachibuse_to_hatafuri route.",
-      "Join way/627560211 at the identical Hatafuri endpoint.",
-      "Join reversed way/165600418 at the identical trail endpoint.",
-      "Remove only duplicate shared endpoints; do not resample or fabricate horizontal geometry.",
-      "GPX elevation is bilinear interpolation of the cropped GSI ground grid, rounded to 0.01 m; it is not a GPS observation."
+      "Use the entire mapped steps way/369143234, then join reversed way/201730066 indices 193 through 52 at the identical shared endpoint.",
+      "Remove only the duplicate shared endpoint. Do not snap to separate peak nodes, resample horizontal geometry or invent trail connectors.",
+      "GPX elevations are approximate bilinear display samples of the native GSI grid, rounded to 0.01m. They are not GPS observations."
     ],
-    "lengthMetersApprox": 918.91,
-    "pointCount": 38,
-    "maxSegmentMeters": 88.76,
+    "lengthMetersApprox": 1573.41,
+    "pointCount": 143,
+    "maxSegmentMeters": 125.97,
     "sampleBounds": {
-      "west": 135.0947397,
-      "south": 34.641502,
-      "east": 135.0993708,
-      "north": 34.6472467
+      "west": 135.1047718,
+      "east": 135.114787,
+      "south": 34.6602705,
+      "north": 34.6659294
     },
     "allPointsWithinTerrain": true,
     "everySegmentMatchesSourceTrailEdge": true,
@@ -90,71 +155,293 @@
     "recordedGpsTrack": false,
     "bridgeOrTunnelEdgesIncluded": false,
     "currentAccessVerified": false,
-    "navigationDisclaimer": "公開地図から作成した表示確認用の概略ルートです。実際に歩いた記録ではありません。通行可否・危険箇所・現況は未確認です。登山中のナビゲーションや安全判断には使用しないでください。",
-    "containsTimestamps": false
+    "containsTimestamps": false,
+    "navigationDisclaimer": "公開地図から作成した表示確認用の概略ルートです。実際に歩いた記録ではありません。通行可否・危険箇所・現況は未確認です。登山中のナビゲーションや安全判断には使用しないでください。"
   },
   "peaks": {
     "file": "sample-peaks.json",
-    "sourceUrl": "https://api.openstreetmap.org/api/0.6/map.json?bbox=135.086,34.6315,135.112,34.6505",
-    "sourceRetrievalDate": "2026-10-03",
-    "count": 3,
+    "count": 2,
+    "sourceUrl": "https://api.openstreetmap.org/api/0.6/map.json?bbox=135.102,34.657,135.118,34.669",
     "attribution": "© OpenStreetMap contributors",
     "license": "ODbL-1.0",
-    "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/",
-    "elevationExplanation": "elevation is approximate GSI ground sample for display placement; osmElevation preserves the public OSM tag when available. Names/coordinates are OSM features."
+    "note": "Two named OSM summit nodes. They need not exactly intersect the mapped trail. 東山付近 is an approximate route-end landmark, not a surveyed summit point."
+  },
+  "sceneFeatures": {
+    "file": "sample-features.json",
+    "mappedSteps": 1,
+    "photoCorrelatedApproximateSteps": 1,
+    "forestPolygons": 1,
+    "aerialInterpretedRockPolygons": 3,
+    "umanosePoint": [
+      135.1117415,
+      34.6657126
+    ],
+    "hyogoViewpoint": [
+      135.11197222222222,
+      34.665749999999996
+    ],
+    "independentViewpointSeparationMeters": 21.51,
+    "rockInterpretationPixelRings": [
+      [
+        [
+          608,
+          428
+        ],
+        [
+          622,
+          412
+        ],
+        [
+          648,
+          401
+        ],
+        [
+          661,
+          398
+        ],
+        [
+          676,
+          402
+        ],
+        [
+          688,
+          397
+        ],
+        [
+          704,
+          402
+        ],
+        [
+          711,
+          409
+        ],
+        [
+          729,
+          410
+        ],
+        [
+          749,
+          400
+        ],
+        [
+          754,
+          411
+        ],
+        [
+          746,
+          422
+        ],
+        [
+          743,
+          438
+        ],
+        [
+          731,
+          449
+        ],
+        [
+          714,
+          444
+        ],
+        [
+          701,
+          435
+        ],
+        [
+          690,
+          439
+        ],
+        [
+          679,
+          450
+        ],
+        [
+          670,
+          465
+        ],
+        [
+          655,
+          470
+        ],
+        [
+          647,
+          458
+        ],
+        [
+          633,
+          459
+        ],
+        [
+          626,
+          452
+        ],
+        [
+          612,
+          446
+        ],
+        [
+          608,
+          428
+        ]
+      ],
+      [
+        [
+          616,
+          350
+        ],
+        [
+          628,
+          343
+        ],
+        [
+          642,
+          343
+        ],
+        [
+          654,
+          333
+        ],
+        [
+          671,
+          331
+        ],
+        [
+          682,
+          338
+        ],
+        [
+          671,
+          348
+        ],
+        [
+          655,
+          353
+        ],
+        [
+          644,
+          366
+        ],
+        [
+          630,
+          366
+        ],
+        [
+          618,
+          359
+        ],
+        [
+          616,
+          350
+        ]
+      ],
+      [
+        [
+          690,
+          371
+        ],
+        [
+          697,
+          363
+        ],
+        [
+          705,
+          371
+        ],
+        [
+          714,
+          379
+        ],
+        [
+          710,
+          396
+        ],
+        [
+          700,
+          402
+        ],
+        [
+          694,
+          389
+        ],
+        [
+          690,
+          371
+        ]
+      ]
+    ],
+    "rockInterpretationTileOrigin": {
+      "zoom": 17,
+      "x": 114726,
+      "y": 52064
+    },
+    "tourismPhotographsBundled": false,
+    "gsiAerialReferenceFile": "source-seamlessphoto-17-114728-52065.jpg",
+    "surveyedStairDimensions": false,
+    "surveyedIndividualTrees": false
   },
   "retainedOsmGeometry": {
     "file": "sample-osm-source.geojson",
-    "purpose": "Machine-readable route-edge and peak source subset for checking and reuse.",
+    "purpose": "Complete source geometry for each used OSM trail, forest and named point.",
     "license": "ODbL-1.0",
-    "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/",
     "attribution": "© OpenStreetMap contributors"
   },
   "inputChecksumsSha256": {
-    "suma-mountain-dem.json": "25ffe32dd6e3a4e8c1a94b15a5909c9edb7f7f279815630b772c1da92832ca6f",
-    "suma-mountain-routes.geojson": "a306e2b22617342ae079b483aa51cec854f3ad608755931efba1b9b38ed6a6df",
-    "suma-mountain.geojson": "a635205a3d75fc37a521f335134e1912b31122c9932f3fe493cd326f3e95fc7c"
-  },
-  "licenseVerification": {
-    "checkedDate": "2026-10-04",
-    "urls": [
-      "https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html",
-      "https://maps.gsi.go.jp/development/ichiran.html#dem",
-      "https://www.openstreetmap.org/copyright",
-      "https://opendatacommons.org/licenses/odbl/1-0/"
-    ],
-    "notes": [
-      "GSI content terms apply PDL 1.0 unless specifically stated otherwise. Source and processing credits retained.",
-      "GSI tile index lists DEM tiles under content usable with attribution outside basic survey products.",
-      "OSM-derived sample route, names and geometry remain under ODbL 1.0, independent of the application code license."
-    ]
+    "sample-osm-source.geojson": "c7ffcd3fdfe715493d4bbc18ffeb251867eacf013ea0da46fa05b962d01d2734",
+    "source-seamlessphoto-17-114728-52065.jpg": "debfb1571a8653f4b08c294000dd72a9c7529f5ffb233cf44c018d6cb1d8ae22",
+    "source-dem5a-15-28681-13016.png": "709dc63c736e4e717ca8521174cfcb519de29867849164532579ca87994d6bb7",
+    "source-dem5a-15-28681-13017.png": "490d05e9f034b079b31c0888b1ce808febc40a3f18cd1df6a287e43bda220691",
+    "source-dem5a-15-28682-13016.png": "23ed7dd11760919e56f35fe9f66fec1faa0ce5e93135a98930ca817b8e70d577",
+    "source-dem5a-15-28682-13017.png": "c366fdeb21ca8ac1e561099b426b47ed0aac4eff0a7001633487d1a589722156"
   },
   "validation": {
     "finiteHeights": true,
     "rectangularGrid": true,
-    "rowOrder": "south_to_north",
-    "columnOrder": "west_to_east",
-    "allPeaksWithinTerrain": true,
-    "routeLongerThan200Meters": true,
-    "maxRouteSegmentUnder100Meters": true,
-    "allRouteSegmentsInSource": true
+    "nativeDemHeightsUnmodified": true,
+    "allRouteSegmentsInSource": true,
+    "routeWithinTerrain": true,
+    "umanoseWithinTerrain": true,
+    "routeApproachesUmanoseMeters": 6.61
   },
   "files": {
     "terrain.json": {
-      "sha256": "66bf194e2e19e688499421836b8c1e6014a338e9da87d44104e519ae0aaf6728",
-      "bytes": 115080
+      "sha256": "99d0487ca1634c27095f732ec446b42374bf424f1c68e079dbdc5e422333c03c",
+      "bytes": 483910
     },
     "sample-route.gpx": {
-      "sha256": "a29479f44163433852891b6c3968ffc0ff5df9be038da0a535286277fee72255",
-      "bytes": 5216
+      "sha256": "fb3f96261c48f1b1078653927ef6ad5cc4f10bdceb7316c52444c936f4916942",
+      "bytes": 14662
     },
     "sample-peaks.json": {
-      "sha256": "15db1b4be179d08bb64d00d1323345ff8d098d39107905bc1b877ada31b881a3",
-      "bytes": 1128
+      "sha256": "b75bc0c0d561db98e7b56c1c983e908c3fc5673acf8fc50c6056af586b984e23",
+      "bytes": 755
+    },
+    "sample-features.json": {
+      "sha256": "47a90dc014b7019333fd23a673d43719f40326bd60f4d13d0a52ed8a9138e04d",
+      "bytes": 18498
     },
     "sample-osm-source.geojson": {
-      "sha256": "d6c985197dc78a57133c8714f57b84939f0ad24967ee4a277835948b3554063d",
-      "bytes": 9461
+      "sha256": "c7ffcd3fdfe715493d4bbc18ffeb251867eacf013ea0da46fa05b962d01d2734",
+      "bytes": 53323
+    },
+    "source-seamlessphoto-17-114728-52065.jpg": {
+      "sha256": "debfb1571a8653f4b08c294000dd72a9c7529f5ffb233cf44c018d6cb1d8ae22",
+      "bytes": 12340
+    },
+    "source-dem5a-15-28681-13016.png": {
+      "sha256": "709dc63c736e4e717ca8521174cfcb519de29867849164532579ca87994d6bb7",
+      "bytes": 91240
+    },
+    "source-dem5a-15-28681-13017.png": {
+      "sha256": "490d05e9f034b079b31c0888b1ce808febc40a3f18cd1df6a287e43bda220691",
+      "bytes": 86375
+    },
+    "source-dem5a-15-28682-13016.png": {
+      "sha256": "23ed7dd11760919e56f35fe9f66fec1faa0ce5e93135a98930ca817b8e70d577",
+      "bytes": 99968
+    },
+    "source-dem5a-15-28682-13017.png": {
+      "sha256": "c366fdeb21ca8ac1e561099b426b47ed0aac4eff0a7001633487d1a589722156",
+      "bytes": 96243
     }
   }
 }

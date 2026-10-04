@@ -1,7 +1,8 @@
+import { validateScenery, type SceneryData } from './detail';
 import { zipSync, strToU8 } from 'fflate';
 import { parseGPX, validateTerrain, type Track, type TerrainData, trackBounds } from './core';
 export interface Photo {id:string;name:string;lat:number;lon:number;url:string;distance:number}
-export interface Project {version:1;track:Track;terrain:TerrainData;photos:Photo[];peaks:Peak[]}
+export interface Project {version:1;track:Track;terrain:TerrainData;photos:Photo[];peaks:Peak[];scenery?:SceneryData}
 export interface Peak {name:string;lat:number;lon:number;elevation?:number}
 export const MAX_PROJECT_BYTES=40*1024*1024;
 const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]!));
@@ -15,7 +16,7 @@ export function readProject(text:string):Project{
  if(d.photos.length>20||d.peaks.length>200)throw new Error('写真または山名が多すぎます。');
  const photos=d.photos.map((p:Photo,i:number)=>{if(!p||typeof p.name!=='string'||p.name.length>200||!Number.isFinite(p.lat)||!Number.isFinite(p.lon)||Math.abs(p.lat)>85||Math.abs(p.lon)>180||!Number.isFinite(p.distance)||p.distance<0||typeof p.url!=='string'||p.url.length>2e6||!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/]+=*(?![\s\S])/.test(p.url))throw new Error('写真データが不正です。');return {id:`photo-${i}`,name:p.name,lat:p.lat,lon:p.lon,distance:p.distance,url:p.url};});
  const peaks=d.peaks.map((p:Peak)=>{if(!p||typeof p.name!=='string'||p.name.length>100||!Number.isFinite(p.lat)||!Number.isFinite(p.lon)||Math.abs(p.lat)>85||Math.abs(p.lon)>180)throw new Error('山名データが不正です。');return {name:p.name,lat:p.lat,lon:p.lon,elevation:Number.isFinite(p.elevation)?p.elevation:undefined};});
- return {version:1,track,terrain,photos,peaks};
+ return {version:1,track,terrain,photos,peaks,...(d.scenery===undefined?{}:{scenery:validateScenery(d.scenery)})};
 }
 export function download(blob:Blob,name:string){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}
 export async function importPhoto(file:File):Promise<string>{
@@ -27,7 +28,7 @@ export async function exportViewer(project:Project):Promise<void>{
  const doc=new DOMParser().parseFromString(html,'text/html');const files:Record<string,Uint8Array>={'index.html':strToU8(html),'data/project.json':strToU8(JSON.stringify(project))};
  const paths=[...Array.from(doc.querySelectorAll('script[src]'),n=>n.getAttribute('src')!),...Array.from(doc.querySelectorAll('link[href]'),n=>n.getAttribute('href')!)];
  for(const path of paths){const url=new URL(path,location.href);if(url.origin!==location.origin)throw new Error('外部アセットは書き出せません。');const res=await fetch(url);if(!res.ok)throw new Error(`アセット取得に失敗しました: ${path}`);files[path.replace(/^\.\//,'').replace(/^\//,'')]=new Uint8Array(await res.arrayBuffer());}
- for(const path of ['THIRD_PARTY_NOTICES.txt','data/terrain.json','data/sample-route.gpx','data/sample-peaks.json','data/provenance.json','data/LICENSES.txt','data/sample-osm-source.geojson']){const res=await fetch(new URL(path,location.href));if(!res.ok)throw new Error(`データ取得に失敗しました: ${path}`);files[path]=new Uint8Array(await res.arrayBuffer());}
+ for(const path of ['THIRD_PARTY_NOTICES.txt','data/terrain.json','data/sample-route.gpx','data/sample-peaks.json','data/provenance.json','data/LICENSES.txt','data/sample-osm-source.geojson','data/sample-features.json','models/trail-assets.glb','models/trail-assets-low.glb','models/README.md']){const res=await fetch(new URL(path,location.href));if(!res.ok)throw new Error(`データ取得に失敗しました: ${path}`);files[path]=new Uint8Array(await res.arrayBuffer());}
  files['START-HERE.txt']=strToU8('3D YAMA — portable viewer\n\nServe this folder with any static HTTP server. For example:\n  python3 -m http.server 8080\nThen open http://localhost:8080. File:// is not supported.\n\nThis archive contains the route and any attached resized photos. They can reveal your location. Only publish or send it if you intend to share those details.\nThe viewer has no analytics or upload endpoint. Optional GSI terrain requests require pressing the explicit load button.\nGSI terrain attribution: https://maps.gsi.go.jp/development/ichiran.html\nSample route/peaks: © OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright\nNot for navigation. See data/provenance.json.\n');
  download(new Blob([zipSync(files,{level:6}) as BlobPart],{type:'application/zip'}),'3d-yama-viewer.zip');
 }

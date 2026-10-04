@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { SceneryLayer } from './scenery';
+import { QUALITY, routeGeometryBudget, insidePolygon, surfaceHeight, type Quality, type SceneryData, type Coordinate, type FeatureGeometry } from './detail';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {
   createProjection, horizontalDistance, pointAtDistance, projectPoint,
@@ -77,7 +79,11 @@ export class TrailScene {
   private light: THREE.DirectionalLight;
   private resizeObserver: ResizeObserver;
   private mode: ViewMode = 'orbit';
-  private quality: 'low' | 'high' = 'high';
+  private quality: Quality = 'standard';
+  private scenery = new SceneryLayer();
+  private sceneryData?: SceneryData;
+  private showRoute = true;
+  public onDetailStatus?: (message: string) => void;
   private distance = 0;
   private routeLength = 0;
   private width = 1;
@@ -101,7 +107,7 @@ export class TrailScene {
     this.onProgress = onProgress;
     // A context failure is intentionally surfaced to the app's accessible fallback.
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, QUALITY.standard.pixelRatio));
     this.renderer.setClearColor('#e9eeea', 0);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -119,13 +125,14 @@ export class TrailScene {
     Object.assign(this.labelRoot.style, { position: 'absolute', inset: '0', overflow: 'hidden', pointerEvents: 'none' });
     container.appendChild(this.labelRoot);
 
-    this.scene.add(this.terrainGroup, this.routeGroup, this.walkingRouteGroup, this.markerGroup);
+    this.scene.add(this.terrainGroup, this.routeGroup, this.walkingRouteGroup, this.markerGroup, this.scenery.group);
+    this.scenery.onStatus = message => this.onDetailStatus?.(message);
     this.walkingRouteGroup.visible = false;
     this.scene.add(new THREE.HemisphereLight('#fbf5df', '#617c71', 2.2));
     this.light = new THREE.DirectionalLight('#fff3d5', 3.2);
     this.light.position.set(-2500, 4000, 1500);
     this.light.castShadow = true;
-    this.light.shadow.mapSize.set(2048, 2048);
+    this.light.shadow.mapSize.set(1024, 1024);
     this.light.shadow.normalBias = 4;
     this.light.shadow.bias = -0.00012;
     this.scene.add(this.light, this.light.target);
@@ -176,6 +183,8 @@ export class TrailScene {
     const indices: number[] = [];
     const c = new THREE.Color();
     const range = Math.max(data.max - data.min, 1);
+    const bare = this.sceneryData?.features.filter(f=>f.kind==='bare_rock'&&f.geometry.type==='Polygon').map(f=>(f.geometry as Extract<FeatureGeometry,{type:'Polygon'}>).coordinates) ?? [];
+    const rocky = new Float32Array(cols * rows);
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const i = row * cols + col;
@@ -193,6 +202,10 @@ export class TrailScene {
         const north = data.heights[Math.min(row + 1, rows - 1) * cols + col];
         const gradient = Math.hypot((east - west) / (2 * width / (cols - 1)), (north - south) / (2 * depth / (rows - 1)));
         c.lerp(new THREE.Color('#b7b69b'), clamp(gradient - 0.6, 0, 0.45));
+        const lon=data.bounds.west+(data.bounds.east-data.bounds.west)*col/(cols-1);
+        const lat=data.bounds.south+(data.bounds.north-data.bounds.south)*row/(rows-1);
+        rocky[i]=bare.some(p=>insidePolygon(lon,lat,p))?1:0;
+        if(rocky[i])c.set('#c5b89b');
         c.toArray(colors, i * 3);
         if (row < rows - 1 && col < cols - 1) {
           const a = i; const b = i + 1; const d = i + cols; const e = d + 1;
@@ -203,29 +216,35 @@ export class TrailScene {
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute('rockiness', new THREE.BufferAttribute(rocky, 1));
     geometry.setIndex(indices);
     geometry.computeVertexNormals();
     geometry.computeBoundingSphere();
     const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0 });
     material.onBeforeCompile = shader => {
-      shader.vertexShader = 'varying float vTerrainElevation;\n' + shader.vertexShader;
-      shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvTerrainElevation = position.y;');
-      shader.fragmentShader = 'varying float vTerrainElevation;\n' + shader.fragmentShader;
+      shader.uniforms.uDetail={value:this.quality==='low'?0:1};
+      shader.vertexShader = 'attribute float rockiness; varying vec3 vGround; varying float vRock;\n' + shader.vertexShader;
+      shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvGround = position; vRock=rockiness;');
+      shader.fragmentShader = `varying vec3 vGround; varying float vRock; uniform float uDetail;
+        float groundHash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}
+        float groundNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(groundHash(i),groundHash(i+vec2(1,0)),f.x),mix(groundHash(i+vec2(0,1)),groundHash(i+vec2(1,1)),f.x),f.y);}
+      ` + shader.fragmentShader;
       shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `
         #include <color_fragment>
-        float contourCoord = vTerrainElevation / 25.0;
+        float broad=groundNoise(vGround.xz*.13); float grain=groundNoise(vGround.xz*3.8+vGround.y*.7);
+        float strata=sin(vGround.y*3.1+groundNoise(vGround.xz*.25)*4.0)*.5+.5;
+        diffuseColor.rgb *= mix(1.0, .78+broad*.26+grain*.12, uDetail);
+        diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*(.83+strata*.25),vRock*uDetail*.55);
+        float contourCoord = vGround.y / 25.0;
         float contourDistance = abs(fract(contourCoord - 0.5) - 0.5);
         float contourWidth = max(fwidth(contourCoord), 0.008);
         float contour = 1.0 - smoothstep(contourWidth * 0.3, contourWidth * 1.0, contourDistance);
-        float majorCoord = vTerrainElevation / 100.0;
-        float majorDistance = abs(fract(majorCoord - 0.5) - 0.5);
-        float majorWidth = max(fwidth(majorCoord), 0.004);
-        float major = 1.0 - smoothstep(majorWidth * 0.3, majorWidth * 1.3, majorDistance);
         float edgeFade = 1.0 - smoothstep(0.2, 0.65, fwidth(contourCoord));
-        diffuseColor.rgb *= 1.0 - (contour * 0.105 + major * 0.06) * edgeFade;
+        diffuseColor.rgb *= 1.0 - contour * .10 * edgeFade * (1.0-uDetail);
       `);
+      material.userData.shader=shader;
     };
-    material.customProgramCacheKey = () => 'true-dem-contours-v1';
+    material.customProgramCacheKey = () => 'true-dem-rock-grain-v2';
     const terrain = new THREE.Mesh(geometry, material);
     terrain.castShadow = true;
     terrain.receiveShadow = true;
@@ -278,7 +297,7 @@ export class TrailScene {
     shadowCamera.far = this.span * 4;
     shadowCamera.updateProjectionMatrix();
     this.light.shadow.normalBias = this.span * 0.00065;
-    this.controls.minDistance = Math.max(100, this.span * 0.08);
+    this.controls.minDistance = 7;
     this.controls.maxDistance = this.span * 4;
     this.camera.far = this.span * 15;
     this.camera.updateProjectionMatrix();
@@ -292,6 +311,7 @@ export class TrailScene {
     this.routeLength = routeStats(track).distance;
     this.distance = 0;
     this.rebuildRoute();
+    if(this.data)this.scenery.setData(this.data,this.sceneryData,track);
     this.setDistance(0);
   }
 
@@ -301,10 +321,13 @@ export class TrailScene {
   setMode(mode: ViewMode): void {
     if (mode === this.mode && this.data) return;
     this.mode = mode;
-    this.routeGroup.visible = mode !== 'walk';
-    this.walkingRouteGroup.visible = mode === 'walk';
+    this.routeGroup.visible = this.showRoute && mode !== 'walk';
+    this.walkingRouteGroup.visible = this.showRoute && mode === 'walk';
     this.camera.near = mode === 'walk' ? 0.05 : 0.5;
-    this.controls.enabled = mode === 'orbit';
+    this.controls.enabled = mode !== 'walk';
+    this.controls.enableRotate = mode === 'orbit';
+    this.controls.minPolarAngle=mode==='overhead'?.00001:.08;
+    this.controls.maxPolarAngle=mode==='overhead'?.00001:Math.PI/2.12;
     this.camera.up.set(0, 1, 0);
     this.camera.fov = mode === 'walk' ? 60 : 38;
     this.camera.updateProjectionMatrix();
@@ -312,7 +335,7 @@ export class TrailScene {
     if (mode === 'walk') {
       this.updateWalkCamera();
     } else if (mode === 'overhead') {
-      this.camera.up.set(0, 0, -1);
+      this.camera.up.set(0, 1, 0);
       this.desiredPosition.set(0, this.centerY + this.span * (this.width / this.height < 1 ? 2.4 : 1.75), 0.01);
       this.desiredTarget.set(0, this.centerY, 0);
       this.transition = true;
@@ -332,25 +355,41 @@ export class TrailScene {
     if (this.mode === 'walk') this.updateWalkCamera();
   }
 
-  setQuality(quality: 'low' | 'high'): void {
+  setScenery(data?:SceneryData):void { this.sceneryData=data; }
+  get detailStats(){return this.scenery.stats;}
+  snapshot(){return {quality:this.quality,mode:this.mode,routeVisible:this.showRoute,detail:this.scenery.stats,camera:this.camera.position.toArray(),target:this.controls.target.toArray(),memory:{...this.renderer.info.memory},render:{...this.renderer.info.render},terrain:this.data?.id};}
+  setRouteVisible(visible:boolean):void {this.showRoute=visible;this.routeGroup.visible=visible&&this.mode!=='walk';this.walkingRouteGroup.visible=visible&&this.mode==='walk';}
+  focus(lon:number,lat:number,distance=90):void {
+    if(!this.data||!this.contains({lat,lon}))return;
+    this.mode='orbit';this.controls.enabled=true;this.controls.enableRotate=true;this.controls.minPolarAngle=.08;this.controls.maxPolarAngle=Math.PI/2.12;this.camera.up.set(0,1,0);this.camera.near=.1;this.camera.fov=48;this.camera.updateProjectionMatrix();
+    const target=this.worldPosition({lat,lon},2);
+    this.desiredTarget.copy(target);this.desiredPosition.copy(target).add(new THREE.Vector3(distance*.66,distance*.48,distance*.7));
+    this.currentTarget.copy(this.controls.target);this.transition=true;
+    this.setRouteVisible(this.showRoute);
+  }
+  setQuality(quality: Quality): void {
     this.quality = quality;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, quality === 'low' ? 1 : 2));
-    this.renderer.shadowMap.enabled = quality === 'high';
+    const q=QUALITY[quality];
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, q.pixelRatio));
+    this.renderer.shadowMap.enabled = q.shadow>0;
+    if(q.shadow){this.light.shadow.mapSize.set(q.shadow,q.shadow);this.light.shadow.map?.dispose();this.light.shadow.map=null;}
+    const material=this.terrainMesh?.material as THREE.MeshStandardMaterial|undefined;
+    if(material?.userData.shader)material.userData.shader.uniforms.uDetail.value=quality==='low'?0:1;
+    this.scenery.setQuality(quality);
     this.terrainGroup.traverse(object => {
-      if (object instanceof THREE.Mesh) {
-        const materials = Array.isArray(object.material) ? object.material : [object.material];
-        materials.forEach(material => { material.needsUpdate = true; });
-      }
+      if (object instanceof THREE.Mesh) (Array.isArray(object.material) ? object.material : [object.material]).forEach(material => { material.needsUpdate = true; });
     });
     this.resize();
   }
 
   reset(): void {
     this.mode = 'orbit';
-    this.routeGroup.visible = true;
+    this.routeGroup.visible = this.showRoute;
     this.walkingRouteGroup.visible = false;
     this.camera.near = 0.5;
     this.controls.enabled = true;
+    this.controls.enableRotate = true;
+    this.controls.minPolarAngle=.08;this.controls.maxPolarAngle=Math.PI/2.12;
     this.camera.up.set(0, 1, 0);
     this.camera.fov = 38;
     this.camera.updateProjectionMatrix();
@@ -381,6 +420,7 @@ export class TrailScene {
     this.clearGroup(this.walkingRouteGroup);
     this.clearGroup(this.markerGroup);
     this.clearGroup(this.walker);
+    this.scenery.dispose();
     this.light.shadow.map?.dispose();
     this.renderer.dispose();
     this.renderer.domElement.remove();
@@ -405,19 +445,7 @@ export class TrailScene {
   }
 
   /** Matches the rendered triangle interpolation, so a 2 m camera never enters a ridge. */
-  private surfaceElevation(point: GeoPoint): number {
-    const data = this.data!;
-    const x = clamp((point.lon - data.bounds.west) / (data.bounds.east - data.bounds.west) * (data.cols - 1), 0, data.cols - 1);
-    const z = clamp((point.lat - data.bounds.south) / (data.bounds.north - data.bounds.south) * (data.rows - 1), 0, data.rows - 1);
-    const col = Math.min(Math.floor(x), data.cols - 2);
-    const row = Math.min(Math.floor(z), data.rows - 2);
-    const u = x - col; const v = z - row;
-    const a = data.heights[row * data.cols + col];
-    const b = data.heights[row * data.cols + col + 1];
-    const d = data.heights[(row + 1) * data.cols + col];
-    const e = data.heights[(row + 1) * data.cols + col + 1];
-    return u + v <= 1 ? a + (b - a) * u + (d - a) * v : e + (d - e) * (1 - u) + (b - e) * (1 - v);
-  }
+  private surfaceElevation(point: GeoPoint): number { return surfaceHeight(this.data!,point.lat,point.lon); }
 
   private rebuildRoute(): void {
     this.clearGroup(this.routeGroup);
@@ -462,13 +490,16 @@ export class TrailScene {
       }
       if (chunk.length > 1) chunks.push(chunk);
     }
-    for (const chunk of chunks) {
+    const paths=chunks.map(chunk=>new RouteCurve(chunk));
+    const totalSegments=Math.max(chunks.length,Math.min(12000,Math.ceil(paths.reduce((sum,path)=>sum+path.getLength(),0)/4)));
+    const allocations=routeGeometryBudget(paths.map(path=>path.getLength()),totalSegments);
+    for (const [chunkIndex,chunk] of chunks.entries()) {
       const groundPositions = chunk.map(point => new THREE.Vector3(point.x, point.y - lift + 0.24, point.z));
       const groundTrace = new THREE.Line(new THREE.BufferGeometry().setFromPoints(groundPositions), new THREE.LineBasicMaterial({ color: '#f57750', transparent: true, opacity: 0.85 }));
       this.walkingRouteGroup.add(groundTrace);
       // A piecewise linear curve preserves the supplied route and never bridges GPX segments.
-      const path = new RouteCurve(chunk);
-      const steps = Math.min(12000, Math.max(chunk.length * 2, Math.ceil(path.getLength() / 8)));
+      const path = paths[chunkIndex];
+      const steps = allocations[chunkIndex];
       const tube = new THREE.Mesh(new THREE.TubeGeometry(path, steps, radius, 6, false), routeMaterial);
       tube.renderOrder = 3;
       this.routeGroup.add(tube);
@@ -650,7 +681,8 @@ export class TrailScene {
       this.camera.lookAt(this.currentTarget);
       if (this.camera.position.distanceTo(this.desiredPosition) < 0.25 && this.currentTarget.distanceTo(this.desiredTarget) < 0.25) this.transition = false;
     }
-    if (this.mode === 'orbit') this.controls.update();
+    if (this.mode !== 'walk') this.controls.update();
+    this.scenery.update(this.camera.position,time);
     this.renderer.render(this.scene, this.camera);
     this.updateLabels();
   };

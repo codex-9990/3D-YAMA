@@ -1,0 +1,620 @@
+{
+  "schemaVersion": 1,
+  "coordinateOrder": "longitude,latitude",
+  "horizontalCrs": "EPSG:4326",
+  "description": "Geolocated scene aids; mapped alignments and aerial interpretations are distinguished from procedural visual detail.",
+  "schema": {
+    "kinds": [
+      "forest",
+      "bare_rock",
+      "steps",
+      "landmark"
+    ],
+    "geometry": "GeoJSON Polygon, LineString or Point; lon/lat coordinates",
+    "steps": "centerline in stored coordinate order; direction describes rise/fall; displayWidthMeters/displayRiserMeters are explicitly illustrative",
+    "focusKey": "landmark Point only: ridge, stairs, forest, summit"
+  },
+  "features": [
+    {
+      "id": "suma-woodland",
+      "kind": "forest",
+      "name": "須磨アルプスの樹林帯",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              135.11582851409912,
+              34.658980972789585
+            ],
+            [
+              135.11582851409912,
+              34.66741726147758
+            ],
+            [
+              135.1055853204372,
+              34.66741726147758
+            ],
+            [
+              135.1053303,
+              34.6671525
+            ],
+            [
+              135.1048048,
+              34.6661962
+            ],
+            [
+              135.1053598,
+              34.6664466
+            ],
+            [
+              135.1054859,
+              34.66674
+            ],
+            [
+              135.1060406,
+              34.667208
+            ],
+            [
+              135.1064569,
+              34.6668636
+            ],
+            [
+              135.1063949,
+              34.6662765
+            ],
+            [
+              135.1059794,
+              34.6659966
+            ],
+            [
+              135.1055798,
+              34.6654098
+            ],
+            [
+              135.105266,
+              34.6649729
+            ],
+            [
+              135.1057702,
+              34.6644479
+            ],
+            [
+              135.1060728,
+              34.663626
+            ],
+            [
+              135.1054952,
+              34.6631844
+            ],
+            [
+              135.1051963,
+              34.6625985
+            ],
+            [
+              135.1050706,
+              34.6618188
+            ],
+            [
+              135.105464,
+              34.6610759
+            ],
+            [
+              135.1062708,
+              34.6607569
+            ],
+            [
+              135.1062189,
+              34.6605634
+            ],
+            [
+              135.1056669,
+              34.6600816
+            ],
+            [
+              135.1056124,
+              34.6596752
+            ],
+            [
+              135.1062363,
+              34.6591952
+            ],
+            [
+              135.10661817929403,
+              34.658980972789585
+            ],
+            [
+              135.11582851409912,
+              34.658980972789585
+            ]
+          ]
+        ]
+      },
+      "sourceIds": [
+        "way/183677080"
+      ],
+      "sourceUrl": "https://www.openstreetmap.org/way/183677080",
+      "provenance": "OSM natural=wood polygon, clipped to terrain extent. Source tag refers to MLIT 2006 woodland-area data; not an individual-tree survey.",
+      "approximate": true,
+      "license": "ODbL-1.0",
+      "attribution": "© OpenStreetMap contributors",
+      "clippedToTerrain": true,
+      "exclusions": [
+        "umanose-rock-1",
+        "umanose-rock-2",
+        "umanose-rock-3"
+      ],
+      "renderingNote": "Tree positions, species, heights and crown shapes are procedural illustration within this mapped envelope; exclude trails and rock polygons."
+    },
+    {
+      "id": "umanose-rock-1",
+      "kind": "bare_rock",
+      "name": "馬の背の露岩（空中写真からの概略範囲）",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              135.11089324951172,
+              34.66558182407951
+            ],
+            [
+              135.11104345321655,
+              34.6657230130153
+            ],
+            [
+              135.1113224029541,
+              34.665820080269086
+            ],
+            [
+              135.11146187782288,
+              34.665846553136745
+            ],
+            [
+              135.11162281036377,
+              34.665811255977985
+            ],
+            [
+              135.11175155639648,
+              34.66585537742409
+            ],
+            [
+              135.11192321777344,
+              34.665811255977985
+            ],
+            [
+              135.11199831962585,
+              34.66574948591398
+            ],
+            [
+              135.11219143867493,
+              34.66574066161536
+            ],
+            [
+              135.11240601539612,
+              34.66582890455925
+            ],
+            [
+              135.11245965957642,
+              34.6657318373158
+            ],
+            [
+              135.11237382888794,
+              34.665634769958636
+            ],
+            [
+              135.11234164237976,
+              34.66549358087247
+            ],
+            [
+              135.11221289634705,
+              34.66539651323617
+            ],
+            [
+              135.11203050613403,
+              34.66544063490313
+            ],
+            [
+              135.11189103126526,
+              34.66552005384445
+            ],
+            [
+              135.1117730140686,
+              34.665484756546604
+            ],
+            [
+              135.11165499687195,
+              34.66538768889996
+            ],
+            [
+              135.1115584373474,
+              34.665255323744
+            ],
+            [
+              135.11139750480652,
+              34.665211201978344
+            ],
+            [
+              135.11131167411804,
+              34.66531709417642
+            ],
+            [
+              135.1111614704132,
+              34.665308269831755
+            ],
+            [
+              135.1110863685608,
+              34.66537004022471
+            ],
+            [
+              135.11093616485596,
+              34.665422986239165
+            ],
+            [
+              135.11089324951172,
+              34.66558182407951
+            ]
+          ]
+        ]
+      },
+      "sourceIds": [],
+      "sourceUrl": "https://maps.gsi.go.jp/#17/34.665713/135.111742/&base=seamlessphoto&ls=seamlessphoto&disp=1",
+      "provenance": "Approximate visual interpretation of pale exposed ground on GSI seamlessphoto z17 tiles; correlated with the OSM 馬の背 point and official Kobe photos. No surveyed outline or artificial elevation offsets.",
+      "approximate": true,
+      "license": "Public Data License 1.0 (GSI content terms)",
+      "attribution": "地理院タイル（標高タイル・空中写真）を加工して作成",
+      "sourceTileUrls": [
+        "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/17/114728/52065.jpg"
+      ],
+      "interpretationAccuracyMeters": 15,
+      "renderingNote": "Rock color and sub-grid facets are visual interpretation; the DEM remains unmodified."
+    },
+    {
+      "id": "umanose-rock-2",
+      "kind": "bare_rock",
+      "name": "馬の背の露岩（空中写真からの概略範囲）",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              135.1109790802002,
+              34.6662701178689
+            ],
+            [
+              135.1111078262329,
+              34.66633188754474
+            ],
+            [
+              135.11125802993774,
+              34.66633188754474
+            ],
+            [
+              135.11138677597046,
+              34.66642012985893
+            ],
+            [
+              135.11156916618347,
+              34.66643777831049
+            ],
+            [
+              135.11168718338013,
+              34.666376008713584
+            ],
+            [
+              135.11156916618347,
+              34.66628776635241
+            ],
+            [
+              135.11139750480652,
+              34.66624364513658
+            ],
+            [
+              135.11127948760986,
+              34.66612892986545
+            ],
+            [
+              135.11112928390503,
+              34.66612892986545
+            ],
+            [
+              135.11100053787231,
+              34.66619069964656
+            ],
+            [
+              135.1109790802002,
+              34.6662701178689
+            ]
+          ]
+        ]
+      },
+      "sourceIds": [],
+      "sourceUrl": "https://maps.gsi.go.jp/#17/34.665713/135.111742/&base=seamlessphoto&ls=seamlessphoto&disp=1",
+      "provenance": "Approximate visual interpretation of pale exposed ground on GSI seamlessphoto z17 tiles; correlated with the OSM 馬の背 point and official Kobe photos. No surveyed outline or artificial elevation offsets.",
+      "approximate": true,
+      "license": "Public Data License 1.0 (GSI content terms)",
+      "attribution": "地理院タイル（標高タイル・空中写真）を加工して作成",
+      "sourceTileUrls": [
+        "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/17/114728/52065.jpg"
+      ],
+      "interpretationAccuracyMeters": 15,
+      "renderingNote": "Rock color and sub-grid facets are visual interpretation; the DEM remains unmodified."
+    },
+    {
+      "id": "umanose-rock-3",
+      "kind": "bare_rock",
+      "name": "馬の背の露岩（空中写真からの概略範囲）",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              135.1117730140686,
+              34.66608480856503
+            ],
+            [
+              135.11184811592102,
+              34.66615540263442
+            ],
+            [
+              135.1119339466095,
+              34.66608480856503
+            ],
+            [
+              135.11203050613403,
+              34.666014214435485
+            ],
+            [
+              135.1119875907898,
+              34.66586420171048
+            ],
+            [
+              135.1118803024292,
+              34.665811255977985
+            ],
+            [
+              135.11181592941284,
+              34.66592597168897
+            ],
+            [
+              135.1117730140686,
+              34.66608480856503
+            ]
+          ]
+        ]
+      },
+      "sourceIds": [],
+      "sourceUrl": "https://maps.gsi.go.jp/#17/34.665713/135.111742/&base=seamlessphoto&ls=seamlessphoto&disp=1",
+      "provenance": "Approximate visual interpretation of pale exposed ground on GSI seamlessphoto z17 tiles; correlated with the OSM 馬の背 point and official Kobe photos. No surveyed outline or artificial elevation offsets.",
+      "approximate": true,
+      "license": "Public Data License 1.0 (GSI content terms)",
+      "attribution": "地理院タイル（標高タイル・空中写真）を加工して作成",
+      "sourceTileUrls": [
+        "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/17/114728/52065.jpg"
+      ],
+      "interpretationAccuracyMeters": 15,
+      "renderingNote": "Rock color and sub-grid facets are visual interpretation; the DEM remains unmodified."
+    },
+    {
+      "id": "togao-400-steps",
+      "kind": "steps",
+      "name": "栂尾山への400段階段",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            135.1047718,
+            34.6602705
+          ],
+          [
+            135.1060611,
+            34.660669
+          ]
+        ]
+      },
+      "sourceIds": [
+        "way/369143234"
+      ],
+      "sourceUrl": "https://www.openstreetmap.org/way/369143234",
+      "provenance": "Exact OSM highway=steps alignment. Kobe City route item 19 and photo confirm the straight concrete staircase. City describes joining partway, then about 350 steps; no exact tread count is assigned to this mapped way.",
+      "approximate": true,
+      "evidenceUrls": [
+        "https://www.city.kobe.lg.jp/i73375/kuyakusho/sumaku/syokaitorikumi/midokoro/sumahaikingmap2ru-to.html",
+        "https://www.city.kobe.lg.jp/images/29425/19.jpg"
+      ],
+      "alignmentConfidence": "mapped",
+      "direction": "ascending_start_to_end",
+      "directionSource": "GSI DEM endpoint elevations",
+      "startElevation": 163.54,
+      "endElevation": 230.04,
+      "surface": "concrete",
+      "stepCount": null,
+      "displayWidthMeters": 1.35,
+      "displayRiserMeters": 0.18,
+      "dimensionsAreIllustrative": true,
+      "lengthMetersApprox": 125.97
+    },
+    {
+      "id": "umanose-west-stairs",
+      "kind": "steps",
+      "name": "馬の背西側の階段（位置概略）",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            135.1110633,
+            34.6654381
+          ],
+          [
+            135.1110964,
+            34.6654686
+          ],
+          [
+            135.1111158,
+            34.6655282
+          ],
+          [
+            135.1111457,
+            34.6655445
+          ],
+          [
+            135.1111513,
+            34.6655692
+          ],
+          [
+            135.1111135,
+            34.6655824
+          ],
+          [
+            135.1111162,
+            34.66561
+          ],
+          [
+            135.1111293,
+            34.6656313
+          ],
+          [
+            135.1111567,
+            34.6656503
+          ],
+          [
+            135.1112194,
+            34.665661
+          ],
+          [
+            135.1112508,
+            34.6656777
+          ]
+        ]
+      },
+      "sourceIds": [
+        "way/201730066"
+      ],
+      "sourceUrl": "https://www.openstreetmap.org/way/201730066",
+      "provenance": "Stair existence is visible in the official tourism photo. This short western approach portion of the mapped footway is a photo/map-correlated approximate placement, not an OSM highway=steps tag or measured stair survey.",
+      "approximate": true,
+      "evidenceUrls": [
+        "https://www.feel-kobe.jp/column/suma-alps/",
+        "https://www.feel-kobe.jp/app/wp-content/uploads/suma-alps_023.jpg"
+      ],
+      "alignmentConfidence": "photo_correlated_approximate",
+      "direction": "descending_start_to_end",
+      "directionSource": "GSI DEM endpoint elevations",
+      "stepCount": null,
+      "displayWidthMeters": 0.9,
+      "displayRiserMeters": 0.2,
+      "dimensionsAreIllustrative": true,
+      "interpretationAccuracyMeters": 20,
+      "surface": "unverified",
+      "renderingNote": "Do not describe exact tread positions, construction, handrails or dimensions as measured.",
+      "lengthMetersApprox": 39.52
+    },
+    {
+      "id": "landmark-umanose",
+      "kind": "landmark",
+      "name": "馬の背",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          135.1117415,
+          34.6657126
+        ]
+      },
+      "sourceIds": [
+        "node/13946671193"
+      ],
+      "sourceUrl": "https://www.openstreetmap.org/node/13946671193",
+      "provenance": "Named OSM cliff point; independently within 25m of the Hyogo Prefecture viewpoint coordinates.",
+      "approximate": true,
+      "focusKey": "ridge",
+      "elevation": 202.8
+    },
+    {
+      "id": "landmark-stairs",
+      "kind": "landmark",
+      "name": "400段階段",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          135.10541645,
+          34.660469750000004
+        ]
+      },
+      "sourceIds": [
+        "way/369143234"
+      ],
+      "sourceUrl": "https://www.openstreetmap.org/way/369143234",
+      "provenance": "Display focus at midpoint of the mapped stair alignment.",
+      "approximate": true,
+      "focusKey": "stairs",
+      "elevation": 197.08
+    },
+    {
+      "id": "landmark-forest",
+      "kind": "landmark",
+      "name": "樹林の登山道",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          135.1068408,
+          34.6638232
+        ]
+      },
+      "sourceIds": [
+        "way/201730066",
+        "way/183677080"
+      ],
+      "sourceUrl": "https://www.openstreetmap.org/way/201730066",
+      "provenance": "Display focus at an existing trail node inside the mapped woodland; not a named landmark.",
+      "approximate": true,
+      "focusKey": "forest",
+      "elevation": 249.16
+    },
+    {
+      "id": "landmark-higashiyama",
+      "kind": "landmark",
+      "name": "東山付近",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          135.114787,
+          34.6658741
+        ]
+      },
+      "sourceIds": [
+        "way/201730066"
+      ],
+      "sourceUrl": "https://www.openstreetmap.org/way/201730066",
+      "provenance": "Endpoint at an existing ridge-trail node near the eastern summit in the official course; summit location is approximate, not a named OSM peak node.",
+      "approximate": true,
+      "focusKey": "summit",
+      "elevation": 249.73
+    }
+  ],
+  "visualReferences": [
+    {
+      "url": "https://www.city.kobe.lg.jp/i73375/kuyakusho/sumaku/syokaitorikumi/midokoro/sumahaikingmap2ru-to.html",
+      "publisher": "Kobe City, Suma Ward",
+      "purpose": "Course sequence, concrete 400-step staircase and exposed ridge description",
+      "redistributed": false
+    },
+    {
+      "url": "https://www.feel-kobe.jp/column/suma-alps/",
+      "publisher": "Kobe Tourism Bureau / Feel KOBE",
+      "purpose": "Granite erosion, wooded surroundings and western approach stairs; photos viewed only, not bundled",
+      "redistributed": false
+    },
+    {
+      "url": "https://web.pref.hyogo.lg.jp/ks20/documents/hyogoviewguidebook.pdf",
+      "publisher": "Hyogo Prefecture",
+      "purpose": "Independent 馬の背 viewpoint coordinate 34°39′56.7″N,135°06′43.1″E",
+      "redistributed": false
+    }
+  ],
+  "limitations": [
+    "No photogrammetry, LiDAR point cloud, current-condition inspection or measured individual-tree/stair survey.",
+    "Five-meter source DEM cannot resolve a narrow knife-edge or individual steps; do not claim procedural sub-grid detail is measured.",
+    "Aerial interpretation may include shadow/vegetation and its source image date is unverified.",
+    "公開地図から作成した表示確認用の概略ルートです。実際に歩いた記録ではありません。通行可否・危険箇所・現況は未確認です。登山中のナビゲーションや安全判断には使用しないでください。"
+  ]
+}
