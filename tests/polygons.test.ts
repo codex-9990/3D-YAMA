@@ -3,10 +3,18 @@ import {insidePolygon,validateScenery,type Coordinate,type SceneryData} from '..
 import {indexPolygon,polygonGridMask,polygonQueryBudget,SceneryComplexityError} from '../src/polygons';
 import {SceneryLayer} from '../src/scenery';
 import type {TerrainData} from '../src/core';
+import {readProject} from '../src/io';
+import {maximumProjectFixture} from './fixtures/maximum-project';
 
 const square=(a:number,b:number,c:number,d:number):Coordinate[]=>[[a,b],[c,b],[c,d],[a,d],[a,b]];
 const circle=(n:number):Coordinate[]=>Array.from({length:n},(_,i)=>[Math.cos(i/(n-1)*Math.PI*2),Math.sin(i/(n-1)*Math.PI*2)]);
 describe('bounded exact polygon containment',()=>{
+  it('accepts the exact maximum-grid browser fixture through the project importer',()=>{
+    const project=readProject(JSON.stringify(maximumProjectFixture()));
+    expect(project.terrain.heights).toHaveLength(512*512);
+    expect(project.track.segments[0]).toHaveLength(1000);
+    expect(project.scenery?.features[0].geometry.coordinates[0]).toHaveLength(15000);
+  });
   it('matches reference parity for concavity, overlapping holes, vertices and reversed rings',()=>{
     const polygons:Coordinate[][][]=[
       [[[0,0],[5,0],[5,2],[2,2],[2,5],[0,5],[0,0]],square(.5,.5,1.5,3),square(1,1,2,4)],

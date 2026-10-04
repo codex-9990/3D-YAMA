@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {unzipSync} from 'fflate';
+import {maximumProjectFixture} from '../fixtures/maximum-project';
 const snapshot=async(page:any)=>page.evaluate(()=> (window as any).yamaDiagnostics.snapshot());
 async function ready(page:any){await page.goto('/');await expect(page.locator('#loading')).toBeHidden({timeout:30000});await expect(page.locator('#coverage')).toBeHidden();await expect.poll(async()=> (await snapshot(page))?.detail.loaded,{timeout:30000}).toBe(true);}
 test('real DEM, Blender detail, quality changes, closeups and cameras render',async({page})=>{
@@ -49,17 +50,12 @@ test('a missing model is surfaced without losing the real DEM',async({page})=>{
 test('maximum scenery imports stay usable and preserve densely recorded route bends',async({page})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await ready(page);await page.locator('[data-quality="low"]').click();
- // Stress geometry is generated around (0,0); it is not a surveyed or personal route.
- const terrain={id:'maximum-polygon-grid',name:'Maximum polygon fixture',bounds:{west:0,south:0,east:.01,north:.01},cols:512,rows:512,heights:Array(512*512).fill(100),min:100,max:100,sourceUrls:[],attribution:'Generated test fixture',license:'Test fixture'};
- const track={name:'Synthetic 10 cm bends',segments:[Array.from({length:1000},(_,i)=>({lat:.005+(i%2)*.0000007,lon:.004+i*.0000007}))]};
- const ring=Array.from({length:15000},(_,i)=>{const a=i/14999*Math.PI*2;return[.005+Math.cos(a)*.0048,.005+Math.sin(a)*.0048];});
- const feature={id:'forest',kind:'forest',name:'Generated forest',sourceUrl:'https://example.com',approximate:true,geometry:{type:'Polygon',coordinates:[ring]}};
- const project={version:1,terrain,track,photos:[],peaks:[],scenery:{schemaVersion:1,features:[feature]}};
+ const project=maximumProjectFixture(),{terrain,track}=project,feature=project.scenery!.features[0];
  await page.locator('#project-file').setInputFiles({name:'maximum.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(project))});
  await expect(page.locator('#route-name')).toHaveText(track.name,{timeout:30000});await expect(page.locator('#coverage')).toBeHidden();
  const imported=await snapshot(page);expect(imported.terrain).toBe(terrain.id);expect(imported.routeGeometry.segments).toBe(999);expect(imported.routeGeometry.maxDeviation).toBe(0);expect(imported.detail.notice).toBeUndefined();
  await page.screenshot({path:'test-results/maximum-polygon-grid.png'});
- project.scenery.features=[{...feature,geometry:{type:'Polygon',coordinates:[[[0,0],[.01,0],[.01,.01],[0,.01],[0,0]]]}},{...feature,id:'pathological',kind:'bare_rock',geometry:{type:'Polygon',coordinates:[Array.from({length:14995},(_,i)=>i%2?[.01,.01]:[0,0])]}}];
+ project.scenery!.features=[{...feature,geometry:{type:'Polygon',coordinates:[[[0,0],[.01,0],[.01,.01],[0,.01],[0,0]]]}},{...feature,id:'pathological',kind:'bare_rock',geometry:{type:'Polygon',coordinates:[Array.from({length:14995},(_,i)=>i%2?[.01,.01]:[0,0])]}}];
  await page.locator('#project-file').setInputFiles({name:'bounded-complexity.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(project))});
  await expect(page.locator('#detail-status')).toContainText('複雑',{timeout:30000});await expect(page.locator('#coverage')).toBeHidden();
  await page.locator('[data-mode="walk"]').click();expect((await snapshot(page)).mode).toBe('walk');
