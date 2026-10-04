@@ -7,3 +7,6 @@ qa-private/
 .env*
 *.local
 .DS_Store
+test-results/
+playwright-report/
+*.blend1

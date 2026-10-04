@@ -1,31 +1,61 @@
-3D-YAMA: public Suma sample data
+3D-YAMA: public eastern Suma Alps sample data
 
 These data licenses are separate from the application code license.
 
-terrain.json
+terrain.json, source-dem5a-15-*.png
 Source: Geospatial Information Authority of Japan (GSI) DEM5A PNG elevation tiles.
 Attribution: 地理院タイル（標高タイル）を加工して作成
-Data was cropped and flattened, preserving the supplied sampled elevations.
+Every decoded native zoom-15 elevation sample in the selected rectangle is
+preserved. The original DEM source has nominal 5 m resolution. The roughly
+3.93 m map-tile pixel spacing does NOT imply a finer ground survey. Four source
+PNG tiles are retained so the offline verifier can check every output height.
+No extra elevation noise, upsampling, zero-filling, or invented pinnacles.
 Public Data License 1.0 (PDL 1.0), under the GSI content terms:
 https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html
-Source / tile details:
 https://maps.gsi.go.jp/development/ichiran.html#dem
 https://maps.gsi.go.jp/development/demtile.html
 
-sample-route.gpx, sample-peaks.json, sample-osm-source.geojson
+source-seamlessphoto-17-114728-52065.jpg, sample-features.json bare_rock polygons
+Source: GSI seamlessphoto aerial image tile, retrieved 2026-10-04.
+https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/17/114728/52065.jpg
+Attribution: 地理院タイル（空中写真）を加工して作成
+GSI content terms / PDL 1.0 (link above). The small aerial reference is retained
+for reproducibility. Approximate exposed-ground outlines are visually traced
+from this tile, NOT measured rock boundaries or photogrammetry. The image
+acquisition date and current condition are unverified.
+
+sample-route.gpx, sample-peaks.json, sample-osm-source.geojson;
+sample-features.json OSM-derived alignments, woodland and named points
 Horizontal geometry and names: © OpenStreetMap contributors
 Open Data Commons Open Database License (ODbL) 1.0:
 https://opendatacommons.org/licenses/odbl/1-0/
 https://www.openstreetmap.org/copyright
 The OSM-derived data remains under ODbL 1.0. Preserve its attribution and license
-when reusing or distributing it. Machine-readable source geometry for all used
-trail edges and peaks is included as sample-osm-source.geojson.
-GPX elevation and peak placement elevations are approximate bilinear samples of
-the GSI terrain grid; GSI source and processing attribution also apply.
+when reusing or distributing it. Complete machine-readable source geometry for
+all used trail ways, woodland and OSM points is included in sample-osm-source.geojson.
+The forest source tag references MLIT Japan's 2006 woodland-area data. It is a
+land-use envelope, not an individual-tree map or proof of present vegetation.
+GPX and scene placement elevations are approximate bilinear samples of the GSI
+ground grid; GSI source and processing attribution also apply.
+
+Reference-only photographs / factual course references (NOT redistributed):
+Kobe City, Suma Ward: course sequence and 400-step staircase reference/photo
+https://www.city.kobe.lg.jp/i73375/kuyakusho/sumaku/syokaitorikumi/midokoro/sumahaikingmap2ru-to.html
+Kobe Tourism Bureau / Feel KOBE: ridge, vegetation and western stairs photos
+https://www.feel-kobe.jp/column/suma-alps/
+Hyogo Prefecture: independent 馬の背 viewpoint coordinates
+https://web.pref.hyogo.lg.jp/ks20/documents/hyogoviewguidebook.pdf
+Photograph rights remain with their respective owners. No permission to reuse
+these tourism photographs, logos, or maps is inferred. Only links and original
+factual descriptions are included; no photo textures or copied prose.
 
 The files contain only public map data. The route is a generated demonstration
 of connected mapped trails, not a recorded walk or a route recommendation.
 There are no personal photographs, activity times, user notes or private tracks.
+Trees, small rock detail, tread count, widths, risers and handrails are visual
+illustration, not surveyed or field-verified. The 400-step alignment is mapped;
+the short western 馬の背 staircase is photo-correlated approximate placement,
+not a mapped highway=steps way. Both are expressly distinguished in metadata.
 Current access, closures, safety, survey dates and field accuracy are unverified.
 Do not use the sample for navigation or safety decisions.
-See provenance.json for transformation details, source IDs, hashes and checks.
+See provenance.json for transformations, source IDs, hashes and validation.

@@ -11,16 +11,17 @@
     "check": "tsc --noEmit"
   },
   "dependencies": {
-    "three": "0.180.0",
-    "fflate": "0.8.2"
+    "fflate": "0.8.2",
+    "three": "0.180.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "@types/node": "22.19.19",
     "@types/three": "0.180.0",
+    "jsdom": "26.1.0",
     "typescript": "5.9.3",
     "vite": "7.1.12",
-    "vitest": "3.2.4",
-    "jsdom": "26.1.0",
-    "@types/node": "22.19.19"
+    "vitest": "3.2.4"
   },
   "engines": {
     "node": ">=22"

@@ -1,0 +1,172 @@
+{
+  "BroadleafBark": {
+    "triangles": 2738,
+    "vertices": 1567,
+    "bounds_blender_z_up": {
+      "min": [
+        -2.7636,
+        -2.355,
+        0.0
+      ],
+      "max": [
+        2.2416,
+        2.214,
+        7.7258
+      ]
+    },
+    "material": "Weathered_bark_vertex_color"
+  },
+  "BroadleafLeaves": {
+    "triangles": 5080,
+    "vertices": 10160,
+    "bounds_blender_z_up": {
+      "min": [
+        -3.142,
+        -2.8118,
+        3.018
+      ],
+      "max": [
+        2.6881,
+        2.6393,
+        8.0
+      ]
+    },
+    "material": "Broadleaf_foliage_vertex_color"
+  },
+  "PineBark": {
+    "triangles": 1670,
+    "vertices": 957,
+    "bounds_blender_z_up": {
+      "min": [
+        -1.8289,
+        -2.1876,
+        0.0
+      ],
+      "max": [
+        2.5399,
+        2.1686,
+        8.0087
+      ]
+    },
+    "material": "Weathered_bark_vertex_color"
+  },
+  "PineNeedles": {
+    "triangles": 5452,
+    "vertices": 10904,
+    "bounds_blender_z_up": {
+      "min": [
+        -2.4077,
+        -2.829,
+        3.1856
+      ],
+      "max": [
+        3.1585,
+        2.8416,
+        8.5
+      ]
+    },
+    "material": "Pine_needles_vertex_color"
+  },
+  "Boulder": {
+    "triangles": 320,
+    "vertices": 162,
+    "bounds_blender_z_up": {
+      "min": [
+        -1.0469,
+        -0.7375,
+        0.0
+      ],
+      "max": [
+        1.0528,
+        0.7951,
+        0.8817
+      ]
+    },
+    "material": "Pale_weathered_stone_vertex_color"
+  },
+  "TimberStep": {
+    "triangles": 216,
+    "vertices": 144,
+    "bounds_blender_z_up": {
+      "min": [
+        -0.76,
+        -0.1278,
+        0.0
+      ],
+      "max": [
+        0.76,
+        0.1289,
+        0.2258
+      ]
+    },
+    "material": "Weathered_timber_vertex_color"
+  },
+  "BroadleafLowBark": {
+    "triangles": 92,
+    "vertices": 60,
+    "bounds_blender_z_up": {
+      "min": [
+        -1.5786,
+        -1.5964,
+        0.0
+      ],
+      "max": [
+        1.6017,
+        1.5481,
+        7.2832
+      ]
+    },
+    "material": "Weathered_bark_vertex_color"
+  },
+  "BroadleafLowLeaves": {
+    "triangles": 208,
+    "vertices": 130,
+    "bounds_blender_z_up": {
+      "min": [
+        -2.3432,
+        -2.4438,
+        3.9248
+      ],
+      "max": [
+        2.4494,
+        2.2554,
+        8.0
+      ]
+    },
+    "material": "Broadleaf_foliage_vertex_color"
+  },
+  "PineLowBark": {
+    "triangles": 92,
+    "vertices": 60,
+    "bounds_blender_z_up": {
+      "min": [
+        -1.1604,
+        -1.5866,
+        0.0
+      ],
+      "max": [
+        2.0026,
+        1.3258,
+        8.082
+      ]
+    },
+    "material": "Weathered_bark_vertex_color"
+  },
+  "PineLowNeedles": {
+    "triangles": 208,
+    "vertices": 130,
+    "bounds_blender_z_up": {
+      "min": [
+        -1.9051,
+        -2.293,
+        3.527
+      ],
+      "max": [
+        2.8714,
+        2.0757,
+        8.5
+      ]
+    },
+    "material": "Pine_needles_vertex_color"
+  }
+}
