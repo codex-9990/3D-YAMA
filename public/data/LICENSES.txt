@@ -1,0 +1,31 @@
+3D-YAMA: public Suma sample data
+
+These data licenses are separate from the application code license.
+
+terrain.json
+Source: Geospatial Information Authority of Japan (GSI) DEM5A PNG elevation tiles.
+Attribution: 地理院タイル（標高タイル）を加工して作成
+Data was cropped and flattened, preserving the supplied sampled elevations.
+Public Data License 1.0 (PDL 1.0), under the GSI content terms:
+https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html
+Source / tile details:
+https://maps.gsi.go.jp/development/ichiran.html#dem
+https://maps.gsi.go.jp/development/demtile.html
+
+sample-route.gpx, sample-peaks.json, sample-osm-source.geojson
+Horizontal geometry and names: © OpenStreetMap contributors
+Open Data Commons Open Database License (ODbL) 1.0:
+https://opendatacommons.org/licenses/odbl/1-0/
+https://www.openstreetmap.org/copyright
+The OSM-derived data remains under ODbL 1.0. Preserve its attribution and license
+when reusing or distributing it. Machine-readable source geometry for all used
+trail edges and peaks is included as sample-osm-source.geojson.
+GPX elevation and peak placement elevations are approximate bilinear samples of
+the GSI terrain grid; GSI source and processing attribution also apply.
+
+The files contain only public map data. The route is a generated demonstration
+of connected mapped trails, not a recorded walk or a route recommendation.
+There are no personal photographs, activity times, user notes or private tracks.
+Current access, closures, safety, survey dates and field accuracy are unverified.
+Do not use the sample for navigation or safety decisions.
+See provenance.json for transformation details, source IDs, hashes and checks.

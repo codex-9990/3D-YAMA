@@ -1,0 +1,449 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "title": "Sumaura mountain extension v12",
+    "bbox": [
+      135.0875,
+      34.633,
+      135.112,
+      34.6505
+    ],
+    "origin": [
+      135.1125557,
+      34.642239
+    ],
+    "local_projection": {
+      "x": "(lon - 135.1125557) * 111319.49079327358 * cos(34.642239*pi/180)",
+      "z": "(lat - 34.642239) * 111319.49079327358",
+      "y": "ground elevation meters; structural heights unknown"
+    },
+    "source_url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=135.086,34.6315,135.112,34.6505",
+    "attribution": "© OpenStreetMap contributors",
+    "license": "ODbL-1.0",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "copyright_url": "https://www.openstreetmap.org/copyright",
+    "retrieval_date": "2026-10-03",
+    "limitations": [
+      "OSM data is incomplete and not current-condition field verification.",
+      "Clipped geometry edges are artificial.",
+      "OSM park boundaries explicitly contain fixme tags.",
+      "Building heights/facades are not surveyed.",
+      "No permission to copy official park maps, photographs, logos or panoramas is inferred."
+    ]
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "way/1472695806",
+      "properties": {
+        "highway": "path",
+        "category": "trail",
+        "clipped_to_bbox": false,
+        "walk_class": "mapped_footpath",
+        "public_access_status": "unknown_unless_otherwise_tagged"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            135.0959094,
+            34.641502
+          ],
+          [
+            135.0955282,
+            34.642236
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/165600418",
+      "properties": {
+        "highway": "path",
+        "category": "trail",
+        "clipped_to_bbox": false,
+        "walk_class": "mapped_footpath",
+        "public_access_status": "unknown_unless_otherwise_tagged"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            135.0993708,
+            34.6472467
+          ],
+          [
+            135.099278,
+            34.6471729
+          ],
+          [
+            135.0990872,
+            34.6471065
+          ],
+          [
+            135.0988889,
+            34.6470514
+          ],
+          [
+            135.0987252,
+            34.6470521
+          ],
+          [
+            135.0985229,
+            34.6469836
+          ],
+          [
+            135.098322,
+            34.646935
+          ],
+          [
+            135.0981042,
+            34.6468089
+          ],
+          [
+            135.0979332,
+            34.6466548
+          ],
+          [
+            135.0977938,
+            34.6465635
+          ],
+          [
+            135.0973452,
+            34.6462301
+          ],
+          [
+            135.0971735,
+            34.6461421
+          ],
+          [
+            135.0969024,
+            34.6460899
+          ],
+          [
+            135.0968002,
+            34.6460377
+          ],
+          [
+            135.0965747,
+            34.6458084
+          ],
+          [
+            135.0959853,
+            34.6456928
+          ],
+          [
+            135.0953805,
+            34.6454936
+          ],
+          [
+            135.0952071,
+            34.6453638
+          ],
+          [
+            135.0950791,
+            34.6451156
+          ],
+          [
+            135.0951405,
+            34.6447036
+          ],
+          [
+            135.0950311,
+            34.6444724
+          ],
+          [
+            135.0950059,
+            34.6442648
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/165604658",
+      "properties": {
+        "highway": "path",
+        "category": "trail",
+        "clipped_to_bbox": false,
+        "walk_class": "mapped_footpath",
+        "public_access_status": "unknown_unless_otherwise_tagged"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            135.0966286,
+            34.6398274
+          ],
+          [
+            135.0966762,
+            34.6399543
+          ],
+          [
+            135.0967674,
+            34.6400514
+          ],
+          [
+            135.0967701,
+            34.6401082
+          ],
+          [
+            135.0966802,
+            34.6402224
+          ],
+          [
+            135.0967171,
+            34.6402911
+          ],
+          [
+            135.0966963,
+            34.640376
+          ],
+          [
+            135.0966447,
+            34.6404028
+          ],
+          [
+            135.0965829,
+            34.6404055
+          ],
+          [
+            135.0965433,
+            34.6404395
+          ],
+          [
+            135.0965431,
+            34.6405239
+          ],
+          [
+            135.0966016,
+            34.6408326
+          ],
+          [
+            135.096651,
+            34.6410319
+          ],
+          [
+            135.096824,
+            34.641295
+          ],
+          [
+            135.096848,
+            34.641374
+          ],
+          [
+            135.0968133,
+            34.6414949
+          ],
+          [
+            135.096667,
+            34.641677
+          ],
+          [
+            135.0955597,
+            34.6423693
+          ],
+          [
+            135.095426,
+            34.642512
+          ],
+          [
+            135.095358,
+            34.642652
+          ],
+          [
+            135.0952355,
+            34.6428224
+          ],
+          [
+            135.0950052,
+            34.6429697
+          ],
+          [
+            135.0949341,
+            34.643058
+          ],
+          [
+            135.0948967,
+            34.6431452
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/627560210",
+      "properties": {
+        "highway": "steps",
+        "category": "trail",
+        "clipped_to_bbox": false,
+        "walk_class": "mapped_footpath",
+        "public_access_status": "unknown_unless_otherwise_tagged",
+        "step_dimensions": "not_mapped; geometry is stair alignment only"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            135.0948967,
+            34.6431452
+          ],
+          [
+            135.094869,
+            34.6433981
+          ],
+          [
+            135.0947822,
+            34.6435287
+          ],
+          [
+            135.0947397,
+            34.6435987
+          ],
+          [
+            135.0947468,
+            34.6436458
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/627560211",
+      "properties": {
+        "highway": "path",
+        "category": "trail",
+        "clipped_to_bbox": false,
+        "walk_class": "mapped_footpath",
+        "public_access_status": "unknown_unless_otherwise_tagged"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            135.0947468,
+            34.6436458
+          ],
+          [
+            135.094754,
+            34.643693
+          ],
+          [
+            135.0949059,
+            34.6439059
+          ],
+          [
+            135.0950081,
+            34.6441291
+          ],
+          [
+            135.0950059,
+            34.6442648
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/627560213",
+      "properties": {
+        "highway": "path",
+        "category": "trail",
+        "clipped_to_bbox": false,
+        "walk_class": "mapped_footpath",
+        "public_access_status": "unknown_unless_otherwise_tagged"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            135.0955597,
+            34.6423693
+          ],
+          [
+            135.0955282,
+            34.642236
+          ],
+          [
+            135.0955322,
+            34.6420705
+          ],
+          [
+            135.0954263,
+            34.6416016
+          ],
+          [
+            135.0954062,
+            34.6413522
+          ],
+          [
+            135.0954531,
+            34.6412353
+          ],
+          [
+            135.0955376,
+            34.6411591
+          ],
+          [
+            135.0956248,
+            34.6411282
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/5806243638",
+      "properties": {
+        "ele": "246",
+        "name": "鉢伏山",
+        "natural": "peak",
+        "category": "peak",
+        "clipped_to_bbox": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          135.0959094,
+          34.641502
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/5924050173",
+      "properties": {
+        "name": "旗振山",
+        "category": "peak",
+        "clipped_to_bbox": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          135.0947468,
+          34.6436458
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/5806243637",
+      "properties": {
+        "ele": "234",
+        "name": "鉄拐山",
+        "natural": "peak",
+        "category": "peak",
+        "clipped_to_bbox": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          135.0993708,
+          34.6472467
+        ]
+      }
+    }
+  ]
+}

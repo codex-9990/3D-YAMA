@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "id": "suma",
+  "preparedDate": "2026-10-04",
+  "description": "Small, offline public-data demo. No private tracks, photographs, logs, account data or personal notes.",
+  "terrain": {
+    "file": "terrain.json",
+    "sourceName": "GSI DEM5A PNG zoom15, ground terrain only",
+    "sourceUrls": [
+      "https://maps.gsi.go.jp/development/ichiran.html#dem",
+      "https://maps.gsi.go.jp/development/demtile.html"
+    ],
+    "tileTemplate": "https://cyberjapandata.gsi.go.jp/xyz/dem5a_png/15/{x}/{y}.png",
+    "sourceRetrievalDate": null,
+    "sourceRetrievalDateNote": "Not recorded in supplied DEM; do not infer it from file modification time.",
+    "sourceSurveyDate": null,
+    "license": "Public Data License 1.0 (GSI content terms)",
+    "licenseUrl": "https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html",
+    "attribution": "地理院タイル（標高タイル）を加工して作成",
+    "originalBounds": [
+      135.08962605477817,
+      34.63415416244292,
+      135.10491248492605,
+      34.650323837557075
+    ],
+    "outputBounds": {
+      "west": 135.08962605477817,
+      "south": 34.63936439109081,
+      "east": 135.10491248492605,
+      "north": 34.65032383755707
+    },
+    "processing": [
+      "Reuse publicly sourced GSI DEM5A PNG zoom-15 samples from the supplied DEM.",
+      "Crop source rows 58–180, inclusive; preserve every column and exact stored elevation.",
+      "Flatten rows south to north, with columns west to east.",
+      "No zero filling, synthetic terrain, smoothing, or replacement of missing values."
+    ],
+    "removedSourceRows": 58,
+    "retainedMissingValues": 0,
+    "cols": 141,
+    "rows": 123,
+    "vertexCount": 17343,
+    "minMeters": 0.21,
+    "maxMeters": 252.7,
+    "approximateGridSpacingMeters": 10,
+    "verticalDatum": "Native GSI ground-elevation data; rigorous datum/survey-date verification not performed.",
+    "limitations": [
+      "Ground elevations omit structures, bridge decks, stair tread heights and vegetation.",
+      "About 10 m sampling cannot resolve small terrain or trail features.",
+      "Some mesh elevations and OSM tagged summit elevations differ; neither is field-surveyed here."
+    ]
+  },
+  "route": {
+    "file": "sample-route.gpx",
+    "name": "須磨サンプル：鉢伏山 → 旗振山 → 鉄拐山",
+    "sourceUrl": "https://api.openstreetmap.org/api/0.6/map.json?bbox=135.086,34.6315,135.112,34.6505",
+    "sourceRetrievalDate": "2026-10-03",
+    "attribution": "© OpenStreetMap contributors",
+    "license": "ODbL-1.0",
+    "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "copyrightUrl": "https://www.openstreetmap.org/copyright",
+    "sourceWayIds": [
+      1472695806,
+      165600418,
+      165604658,
+      627560210,
+      627560211,
+      627560213
+    ],
+    "processing": [
+      "Take supplied hachibuse_to_hatafuri route.",
+      "Join way/627560211 at the identical Hatafuri endpoint.",
+      "Join reversed way/165600418 at the identical trail endpoint.",
+      "Remove only duplicate shared endpoints; do not resample or fabricate horizontal geometry.",
+      "GPX elevation is bilinear interpolation of the cropped GSI ground grid, rounded to 0.01 m; it is not a GPS observation."
+    ],
+    "lengthMetersApprox": 918.91,
+    "pointCount": 38,
+    "maxSegmentMeters": 88.76,
+    "sampleBounds": {
+      "west": 135.0947397,
+      "south": 34.641502,
+      "east": 135.0993708,
+      "north": 34.6472467
+    },
+    "allPointsWithinTerrain": true,
+    "everySegmentMatchesSourceTrailEdge": true,
+    "artificialConnectorCount": 0,
+    "approximate": true,
+    "recordedGpsTrack": false,
+    "bridgeOrTunnelEdgesIncluded": false,
+    "currentAccessVerified": false,
+    "navigationDisclaimer": "公開地図から作成した表示確認用の概略ルートです。実際に歩いた記録ではありません。通行可否・危険箇所・現況は未確認です。登山中のナビゲーションや安全判断には使用しないでください。",
+    "containsTimestamps": false
+  },
+  "peaks": {
+    "file": "sample-peaks.json",
+    "sourceUrl": "https://api.openstreetmap.org/api/0.6/map.json?bbox=135.086,34.6315,135.112,34.6505",
+    "sourceRetrievalDate": "2026-10-03",
+    "count": 3,
+    "attribution": "© OpenStreetMap contributors",
+    "license": "ODbL-1.0",
+    "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "elevationExplanation": "elevation is approximate GSI ground sample for display placement; osmElevation preserves the public OSM tag when available. Names/coordinates are OSM features."
+  },
+  "retainedOsmGeometry": {
+    "file": "sample-osm-source.geojson",
+    "purpose": "Machine-readable route-edge and peak source subset for checking and reuse.",
+    "license": "ODbL-1.0",
+    "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "attribution": "© OpenStreetMap contributors"
+  },
+  "inputChecksumsSha256": {
+    "suma-mountain-dem.json": "25ffe32dd6e3a4e8c1a94b15a5909c9edb7f7f279815630b772c1da92832ca6f",
+    "suma-mountain-routes.geojson": "a306e2b22617342ae079b483aa51cec854f3ad608755931efba1b9b38ed6a6df",
+    "suma-mountain.geojson": "a635205a3d75fc37a521f335134e1912b31122c9932f3fe493cd326f3e95fc7c"
+  },
+  "licenseVerification": {
+    "checkedDate": "2026-10-04",
+    "urls": [
+      "https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html",
+      "https://maps.gsi.go.jp/development/ichiran.html#dem",
+      "https://www.openstreetmap.org/copyright",
+      "https://opendatacommons.org/licenses/odbl/1-0/"
+    ],
+    "notes": [
+      "GSI content terms apply PDL 1.0 unless specifically stated otherwise. Source and processing credits retained.",
+      "GSI tile index lists DEM tiles under content usable with attribution outside basic survey products.",
+      "OSM-derived sample route, names and geometry remain under ODbL 1.0, independent of the application code license."
+    ]
+  },
+  "validation": {
+    "finiteHeights": true,
+    "rectangularGrid": true,
+    "rowOrder": "south_to_north",
+    "columnOrder": "west_to_east",
+    "allPeaksWithinTerrain": true,
+    "routeLongerThan200Meters": true,
+    "maxRouteSegmentUnder100Meters": true,
+    "allRouteSegmentsInSource": true
+  },
+  "files": {
+    "terrain.json": {
+      "sha256": "66bf194e2e19e688499421836b8c1e6014a338e9da87d44104e519ae0aaf6728",
+      "bytes": 115080
+    },
+    "sample-route.gpx": {
+      "sha256": "a29479f44163433852891b6c3968ffc0ff5df9be038da0a535286277fee72255",
+      "bytes": 5216
+    },
+    "sample-peaks.json": {
+      "sha256": "15db1b4be179d08bb64d00d1323345ff8d098d39107905bc1b877ada31b881a3",
+      "bytes": 1128
+    },
+    "sample-osm-source.geojson": {
+      "sha256": "d6c985197dc78a57133c8714f57b84939f0ad24967ee4a277835948b3554063d",
+      "bytes": 9461
+    }
+  }
+}
