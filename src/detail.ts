@@ -1,5 +1,6 @@
 /** Bounded, deterministic illustrative surface detail. Never changes DEM elevations. */
 import { createProjection, projectPoint, type GeoPoint, type TerrainData, type Track } from './core';
+import { indexPolygon, polygonQueryBudget } from './polygons';
 export type Quality = 'low' | 'standard' | 'high';
 export const QUALITY = {
   low: { label: '軽量', pixelRatio: 1, trees: 0, nearTrees: 0, nearDistance: 0, rocks: 0, shadow: 0 },
@@ -39,14 +40,14 @@ export function surfaceHeight(data:TerrainData,lat:number,lon:number):number {
 }
 export function distanceToLine(x:number,z:number,line:Coordinate[]):number { let best=Infinity;for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i],dx=b[0]-a[0],dz=b[1]-a[1],q=dx*dx+dz*dz,t=q?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/q)):0;best=Math.min(best,Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t));}return best; }
 /** Bounding-volume hierarchy keeps 50k-point imported projects out of the placement hot path. */
-export function lineProximity(lines:Coordinate[][]):(x:number,z:number,radius:number)=>boolean {
+export function lineProximity(lines:Coordinate[][],budget?:{spend():void}):(x:number,z:number,radius:number)=>boolean {
   type Segment={a:Coordinate;b:Coordinate;minX:number;maxX:number;minZ:number;maxZ:number};
   type Node={minX:number;maxX:number;minZ:number;maxZ:number;left?:Node;right?:Node;segments?:Segment[]};
   const segments:Segment[]=[];
   for(const line of lines)for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i];segments.push({a,b,minX:Math.min(a[0],b[0]),maxX:Math.max(a[0],b[0]),minZ:Math.min(a[1],b[1]),maxZ:Math.max(a[1],b[1])});}
   const build=(items:Segment[]):Node=>{const node:Node={minX:Infinity,maxX:-Infinity,minZ:Infinity,maxZ:-Infinity};for(const s of items){node.minX=Math.min(node.minX,s.minX);node.maxX=Math.max(node.maxX,s.maxX);node.minZ=Math.min(node.minZ,s.minZ);node.maxZ=Math.max(node.maxZ,s.maxZ);}if(items.length<=12){node.segments=items;return node;}const axis=node.maxX-node.minX>node.maxZ-node.minZ?'X':'Z';items.sort((a,b)=>(a[`min${axis}`]+a[`max${axis}`])-(b[`min${axis}`]+b[`max${axis}`]));const mid=items.length>>>1;node.left=build(items.slice(0,mid));node.right=build(items.slice(mid));return node;};
   const root=build(segments);
-  const visit=(node:Node,x:number,z:number,r:number):boolean=>{if(x+r<node.minX||x-r>node.maxX||z+r<node.minZ||z-r>node.maxZ)return false;if(node.segments)return node.segments.some(s=>distanceToLine(x,z,[s.a,s.b])<r);return visit(node.left!,x,z,r)||visit(node.right!,x,z,r);};
+  const visit=(node:Node,x:number,z:number,r:number):boolean=>{budget?.spend();if(x+r<node.minX||x-r>node.maxX||z+r<node.minZ||z-r>node.maxZ)return false;if(node.segments)return node.segments.some(s=>{budget?.spend();return distanceToLine(x,z,[s.a,s.b])<r;});return visit(node.left!,x,z,r)||visit(node.right!,x,z,r);};
   return (x,z,radius)=>visit(root,x,z,radius);
 }
 export function seeded(seed=73647):()=>number { return ()=>{seed|=0;seed=(seed+0x6D2B79F5)|0;let t=Math.imul(seed^(seed>>>15),1|seed);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;}; }
@@ -56,28 +57,29 @@ export function createDetailPlan(data:TerrainData,scenery:SceneryData,track?:Tra
   const geo=(x:number,z:number):GeoPoint=>({lon:x/projection.metersPerDegreeLon+projection.lon,lat:projection.lat-z/projection.metersPerDegreeLat});
   const sw=world([b.west,b.south]),ne=world([b.east,b.north]);
   const polygons=(kind:string)=>scenery.features.filter(f=>f.kind===kind&&f.geometry.type==='Polygon').map(f=>(f.geometry as Extract<FeatureGeometry,{type:'Polygon'}>).coordinates.map(r=>r.map(world)));
-  const forests=polygons('forest'),bare=polygons('bare_rock');
+  const queryBudget=polygonQueryBudget();
+  const forests=polygons('forest').map(p=>indexPolygon(p,queryBudget)),bare=polygons('bare_rock').map(p=>indexPolygon(p,queryBudget));
   const routes=track?.segments.map(s=>s.map(p=>world([p.lon,p.lat])))??[];
   const stairFeatures=scenery.features.filter(f=>f.kind==='steps'&&f.geometry.type==='LineString');
   const stairs=stairFeatures.map(f=>(f.geometry as Extract<FeatureGeometry,{type:'LineString'}>).coordinates.map(world));
   const trees:Placement[]=[],rocks:Placement[]=[],steps:Placement[]=[];
-  const nearTrail=lineProximity([...routes,...stairs]);const nearRoute=lineProximity(routes);
+  const nearTrail=lineProximity([...routes,...stairs],queryBudget);const nearRoute=lineProximity(routes,queryBudget);
   const within=(p:GeoPoint)=>p.lat>b.south&&p.lat<b.north&&p.lon>b.west&&p.lon<b.east;
   const height=(x:number,z:number)=>{const p=geo(x,z);return surfaceHeight(data,p.lat,p.lon);};
   // One spatially stable distribution shared by all quality settings. No random terrain relief.
   for(let i=0;i<50000&&trees.length<QUALITY.high.trees;i++){
     const x=sw[0]+random()*(ne[0]-sw[0]),z=ne[1]+random()*(sw[1]-ne[1]);
-    if(!forests.some(p=>insidePolygon(x,z,p))||bare.some(p=>insidePolygon(x,z,p)))continue;
+    if(!forests.some(p=>p.contains(x,z))||bare.some(p=>p.contains(x,z)))continue;
     if(nearTrail(x,z,5))continue;
     const y=height(x,z),slope=Math.hypot(height(x+2,z)-height(x-2,z),height(x,z+2)-height(x,z-2))/4;
     if(slope>1.9||y<2)continue;
     trees.push({x,y:y-.15,z,rotation:random()*Math.PI*2,scale:1.05+random()*.7,variant:random()>.72?1:0});
   }
   for(const polygon of bare){
-    const xs=polygon[0].map(p=>p[0]),zs=polygon[0].map(p=>p[1]),minX=Math.min(...xs),maxX=Math.max(...xs),minZ=Math.min(...zs),maxZ=Math.max(...zs);
+    const {minX,maxX,minZ,maxZ}=polygon.bounds;
     for(let i=0;i<3000&&rocks.length<QUALITY.high.rocks;i++){
       const x=minX+random()*(maxX-minX),z=minZ+random()*(maxZ-minZ),p=geo(x,z);
-      if(!within(p)||!insidePolygon(x,z,polygon)||nearRoute(x,z,1.15))continue;
+      if(!within(p)||!polygon.contains(x,z)||nearRoute(x,z,1.15))continue;
       rocks.push({x,y:height(x,z)-.16,z,rotation:random()*Math.PI*2,scale:.35+random()*1.05,variant:0});
     }
   }
