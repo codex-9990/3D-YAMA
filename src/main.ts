@@ -55,7 +55,7 @@ function updateDetailUI(){
   for(const id of ['quality','quality-sidebar'])($(id) as HTMLSelectElement).value=quality;
   document.querySelectorAll<HTMLButtonElement>('[data-quality]').forEach(b=>{const active=b.dataset.quality===quality;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
   const label=quality==='low'?'DEMのみ · 影なし / DPR上限1':quality==='standard'?'遠景の樹冠 · 岩・階段 / DPR上限1.5':'近くの枝葉へ自動切替 · 近景96本まで / DPR上限2';
-  $('detail-status').textContent=scenery?`${QUALITY[quality].label} · ${label}`:'実DEMを表示中 · 詳細地物は須磨サンプル限定';
+  $('detail-status').textContent=scene?.detailStats.notice??(scenery?`${QUALITY[quality].label} · ${label}`:'実DEMを表示中 · 詳細地物は須磨サンプル限定');
   document.querySelectorAll<HTMLButtonElement>('[data-focus]').forEach(b=>b.disabled=!scenery?.features.some(f=>f.kind===b.dataset.focus));
 }
 function selectQuality(value:Quality){quality=value;scene?.setQuality(value);updateDetailUI();}

@@ -3,6 +3,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createDetailPlan, QUALITY, type DetailPlan, type Placement, type Quality, type SceneryData } from './detail';
 import type { TerrainData, Track } from './core';
+import { SceneryComplexityError } from './polygons';
 
 type Part = { geometry: THREE.BufferGeometry; material: THREE.Material };
 type Batch = { mesh: THREE.InstancedMesh; placements: Placement[]; near: boolean; species?: number };
@@ -12,6 +13,7 @@ export class SceneryLayer {
   private assets?: Map<string,Part>;
   private loading?: Promise<void>;
   private plan?: DetailPlan;
+  private notice?: string;
   private quality:Quality='standard';
   private batches:Batch[]=[];
   private disposed=false;
@@ -20,9 +22,14 @@ export class SceneryLayer {
   private lastCamera=new THREE.Vector3(Infinity,Infinity,Infinity);
   onStatus?:(message:string)=>void;
   constructor(){this.group.name='Illustrative Blender surface details';}
-  setData(data:TerrainData,scenery:SceneryData|undefined,track?:Track){this.plan=scenery?createDetailPlan(data,scenery,track):undefined;this.rebuild();}
+  setData(data:TerrainData,scenery:SceneryData|undefined,track?:Track){
+    this.plan=undefined;this.notice=undefined;
+    try{this.plan=scenery?createDetailPlan(data,scenery,track):undefined;}
+    catch(error){if(!(error instanceof SceneryComplexityError))throw error;this.notice=error.message;}
+    this.rebuild();if(this.notice)this.onStatus?.(this.notice);
+  }
   setQuality(quality:Quality){this.quality=quality;this.rebuild();}
-  get stats(){return {quality:this.quality,trees:Math.min(this.plan?.trees.length??0,QUALITY[this.quality].trees),rocks:Math.min(this.plan?.rocks.length??0,QUALITY[this.quality].rocks),steps:this.quality==='low'?0:this.plan?.steps.length??0,loaded:!!this.assets,nearTrees:this.batches.filter(b=>b.near&&b.mesh.name.includes('Bark')).reduce((sum,b)=>sum+b.mesh.count,0)};}
+  get stats(){return {quality:this.quality,notice:this.notice,trees:Math.min(this.plan?.trees.length??0,QUALITY[this.quality].trees),rocks:Math.min(this.plan?.rocks.length??0,QUALITY[this.quality].rocks),steps:this.quality==='low'?0:this.plan?.steps.length??0,loaded:!!this.assets,nearTrees:this.batches.filter(b=>b.near&&b.mesh.name.includes('Bark')).reduce((sum,b)=>sum+b.mesh.count,0)};}
   private load(){
     if(this.loading)return this.loading;
     const loader=new GLTFLoader();

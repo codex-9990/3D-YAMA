@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { SceneryLayer } from './scenery';
-import { QUALITY, routeGeometryBudget, insidePolygon, surfaceHeight, type Quality, type SceneryData, type Coordinate, type FeatureGeometry } from './detail';
+import { RouteCurve, sampleRouteGeometry } from './route';
+import { QUALITY, surfaceHeight, type Quality, type SceneryData, type Coordinate, type FeatureGeometry } from './detail';
+import { polygonGridMask } from './polygons';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {
   createProjection, horizontalDistance, pointAtDistance, projectPoint,
@@ -20,39 +22,6 @@ const PALETTE = [
   new THREE.Color('#8fafa1'), new THREE.Color('#769880'),
   new THREE.Color('#65846a'), new THREE.Color('#9fa184'), new THREE.Color('#d9c9a1'),
 ];
-
-/** Arc-length polyline lookup is O(log n), including for 50,000-point GPX files. */
-class RouteCurve extends THREE.Curve<THREE.Vector3> {
-  private lengths: number[] = [0];
-  private total = 0;
-  constructor(private points: THREE.Vector3[]) {
-    super();
-    for (let i = 1; i < points.length; i++) {
-      this.total += points[i].distanceTo(points[i - 1]);
-      this.lengths.push(this.total);
-    }
-  }
-  getLength(): number { return this.total; }
-  getPoint(t: number, target = new THREE.Vector3()): THREE.Vector3 {
-    const distance = clamp(t, 0, 1) * this.total;
-    let low = 1; let high = this.lengths.length - 1;
-    while (low < high) {
-      const mid = (low + high) >>> 1;
-      if (this.lengths[mid] < distance) low = mid + 1;
-      else high = mid;
-    }
-    const length = this.lengths[low] - this.lengths[low - 1];
-    const fraction = length > 0 ? (distance - this.lengths[low - 1]) / length : 0;
-    return target.copy(this.points[low - 1]).lerp(this.points[low], fraction);
-  }
-  getPointAt(t: number, target = new THREE.Vector3()): THREE.Vector3 { return this.getPoint(t, target); }
-  getTangentAt(t: number, target = new THREE.Vector3()): THREE.Vector3 {
-    const delta = Math.min(0.001, 1 / Math.max(this.points.length, 1));
-    const before = this.getPoint(Math.max(0, t - delta));
-    const after = this.getPoint(Math.min(1, t + delta));
-    return target.copy(after).sub(before).normalize();
-  }
-}
 
 /** Offline-only, meter-scale terrain diorama. The DEM is never vertically exaggerated. */
 export class TrailScene {
@@ -86,6 +55,7 @@ export class TrailScene {
   public onDetailStatus?: (message: string) => void;
   private distance = 0;
   private routeLength = 0;
+  private routeGeometryStatus = { segments: 0, maxDeviation: 0, omittedChunks: 0, pointInspections: 0, workLimited: false };
   private width = 1;
   private height = 1;
   private span = 4000;
@@ -187,7 +157,10 @@ export class TrailScene {
     const range = Math.max(data.max - data.min, 1);
     const bare = this.sceneryData?.features.filter(f=>f.kind==='bare_rock'&&f.geometry.type==='Polygon').map(f=>(f.geometry as Extract<FeatureGeometry,{type:'Polygon'}>).coordinates) ?? [];
     const wooded = this.sceneryData?.features.filter(f=>f.kind==='forest'&&f.geometry.type==='Polygon').map(f=>(f.geometry as Extract<FeatureGeometry,{type:'Polygon'}>).coordinates) ?? [];
-    const rocky = new Float32Array(cols * rows);
+    const lons=Array.from({length:cols},(_,col)=>data.bounds.west+(data.bounds.east-data.bounds.west)*col/(cols-1));
+    const lats=Array.from({length:rows},(_,row)=>data.bounds.south+(data.bounds.north-data.bounds.south)*row/(rows-1));
+    const rocky = new Float32Array(polygonGridMask(bare,lons,lats));
+    const forestMask = polygonGridMask(wooded,lons,lats);
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const i = row * cols + col;
@@ -205,10 +178,7 @@ export class TrailScene {
         const north = data.heights[Math.min(row + 1, rows - 1) * cols + col];
         const gradient = Math.hypot((east - west) / (2 * width / (cols - 1)), (north - south) / (2 * depth / (rows - 1)));
         c.lerp(new THREE.Color('#b7b69b'), clamp(gradient - 0.6, 0, 0.45));
-        const lon=data.bounds.west+(data.bounds.east-data.bounds.west)*col/(cols-1);
-        const lat=data.bounds.south+(data.bounds.north-data.bounds.south)*row/(rows-1);
-        rocky[i]=bare.some(p=>insidePolygon(lon,lat,p))?1:0;
-        if(wooded.some(p=>insidePolygon(lon,lat,p)))c.set('#657555');
+        if(forestMask[i])c.set('#657555');
         if(rocky[i])c.set('#c5b89b');
         c.toArray(colors, i * 3);
         if (row < rows - 1 && col < cols - 1) {
@@ -363,8 +333,12 @@ export class TrailScene {
   }
 
   setScenery(data?:SceneryData):void { this.sceneryData=data; }
-  get detailStats(){return this.scenery.stats;}
-  snapshot(){return {quality:this.quality,mode:this.mode,routeVisible:this.showRoute,detail:this.scenery.stats,camera:this.camera.position.toArray(),target:this.controls.target.toArray(),memory:{...this.renderer.info.memory},render:{...this.renderer.info.render},terrain:this.data?.id};}
+  get detailStats(){
+    const {maxDeviation,omittedChunks}=this.routeGeometryStatus;
+    const routeNotice=omittedChunks?`俯瞰ルートの${omittedChunks}区間を省略（歩行表示では全区間）`:maxDeviation>.001?`俯瞰ルート線を簡略化（最大ずれ ${Math.ceil(maxDeviation*10)/10} m）`:undefined;
+    return {...this.scenery.stats,notice:[this.scenery.stats.notice,routeNotice].filter(Boolean).join(' · ')||undefined};
+  }
+  snapshot(){return {quality:this.quality,mode:this.mode,routeVisible:this.showRoute,detail:this.detailStats,routeGeometry:{...this.routeGeometryStatus},camera:this.camera.position.toArray(),target:this.controls.target.toArray(),memory:{...this.renderer.info.memory},render:{...this.renderer.info.render},terrain:this.data?.id};}
   setRouteVisible(visible:boolean):void {this.renderDirty=true;this.showRoute=visible;this.routeGroup.visible=visible&&this.mode!=='walk';this.walkingRouteGroup.visible=visible&&this.mode==='walk';}
   focus(lon:number,lat:number,distance=90):void {this.renderDirty=true;
     if(!this.data||!this.contains({lat,lon}))return;
@@ -460,6 +434,7 @@ export class TrailScene {
     this.clearGroup(this.routeGroup);
     this.clearGroup(this.walkingRouteGroup);
     this.samples = [];
+    this.routeGeometryStatus = { segments: 0, maxDeviation: 0, omittedChunks: 0, pointInspections: 0, workLimited: false };
     if (!this.track || !this.data || !this.projection) return;
     const radius = clamp(this.span / 1500, 2.2, 6);
     const lift = radius * 1.1 + 0.8;
@@ -490,7 +465,8 @@ export class TrailScene {
           if (!first) first = position.clone();
           last = position.clone();
           const previous = chunk[chunk.length - 1];
-          if (!previous || previous.distanceTo(position) > 0.3) {
+          // Remove numerical duplicates only; dense GPX corners can be centimeters apart.
+          if (!previous || previous.distanceToSquared(position) > 1e-12) {
             chunk.push(position);
             this.samples.push({ position, distance: d });
           }
@@ -499,16 +475,17 @@ export class TrailScene {
       }
       if (chunk.length > 1) chunks.push(chunk);
     }
-    const paths=chunks.map(chunk=>new RouteCurve(chunk));
-    const totalSegments=Math.max(chunks.length,Math.min(12000,Math.ceil(paths.reduce((sum,path)=>sum+path.getLength(),0)/4)));
-    const allocations=routeGeometryBudget(paths.map(path=>path.getLength()),totalSegments);
-    for (const [chunkIndex,chunk] of chunks.entries()) {
+    for (const chunk of chunks) {
       const groundPositions = chunk.map(point => new THREE.Vector3(point.x, point.y - lift + 0.24, point.z));
       const groundTrace = new THREE.Line(new THREE.BufferGeometry().setFromPoints(groundPositions), new THREE.LineBasicMaterial({ color: '#f57750', transparent: true, opacity: 0.85 }));
       this.walkingRouteGroup.add(groundTrace);
-      // A piecewise linear curve preserves the supplied route and never bridges GPX segments.
-      const path = paths[chunkIndex];
-      const steps = allocations[chunkIndex];
+    }
+    const geometry = sampleRouteGeometry(chunks);
+    this.routeGeometryStatus = { segments: geometry.chunks.reduce((sum, chunk) => sum + chunk.points.length - 1, 0), maxDeviation: geometry.maxDeviation, omittedChunks: geometry.omittedChunks, pointInspections: geometry.pointInspections, workLimited: geometry.workLimited };
+    for (const { points } of geometry.chunks) {
+      // One ring per selected vertex keeps dense GPX bends and never bridges chunks.
+      const path = new RouteCurve(points);
+      const steps = points.length - 1;
       const tube = new THREE.Mesh(new THREE.TubeGeometry(path, steps, radius, 6, false), routeMaterial);
       tube.renderOrder = 3;
       this.routeGroup.add(tube);
